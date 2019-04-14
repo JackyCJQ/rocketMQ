@@ -118,6 +118,7 @@ public class BrokerOuterAPI {
 
         List<String> nameServerAddressList = this.remotingClient.getNameServerAddressList();
         if (nameServerAddressList != null) {
+            //该方法主要是遍历 NameServer列表， Broker消息服务器依次向NameServerr发送心跳包
             for (String namesrvAddr : nameServerAddressList) { // 循环多个 Namesrv
                 try {
                     RegisterBrokerResult result = this.registerBroker(namesrvAddr, clusterName, brokerAddr, brokerName, brokerId,
@@ -150,16 +151,22 @@ public class BrokerOuterAPI {
     ) throws RemotingCommandException, MQBrokerException, RemotingConnectException, RemotingSendRequestException, RemotingTimeoutException,
         InterruptedException {
         RegisterBrokerRequestHeader requestHeader = new RegisterBrokerRequestHeader();
-        requestHeader.setBrokerAddr(brokerAddr);
-        requestHeader.setBrokerId(brokerId);
-        requestHeader.setBrokerName(brokerName);
-        requestHeader.setClusterName(clusterName);
-        requestHeader.setHaServerAddr(haServerAddr);
+        requestHeader.setBrokerAddr(brokerAddr);//broker 地址
+        requestHeader.setBrokerId(brokerId);//brokerld,O:Master:大于0:Slave。
+        requestHeader.setBrokerName(brokerName);//broker名称
+        requestHeader.setClusterName(clusterName);//集群名称
+        requestHeader.setHaServerAddr(haServerAddr);//master地址，初次请求时该值为空，slave向Nameserver注册后返回
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.REGISTER_BROKER, requestHeader);
 
         RegisterBrokerBody requestBody = new RegisterBrokerBody();
+        /**
+         * 主题配置， topicConfigWrapper内部封装的是TopicConfig­Manager 中的 topicConfigTable，
+         * 内部存储的是 Broker启动时默认的 一 些 Topic, MixAll.SELF TEST_TOPIC、 MixAll.DEFAULT一TOPIC ( AutoCreateTopic- Enable=true ).
+         * , MixAll.BENCHMARK TOPIC 、 MixAll.OFFSET MOVED EVENT 、 BrokerConfig#brokerClusterName 、 BrokerConfig#brokerName 。
+         * Broker中 Topic 默认存储在${ Rock巳t一Hom巳}/store/confg/topic. on 中 。
+         */
         requestBody.setTopicConfigSerializeWrapper(topicConfigWrapper);
-        requestBody.setFilterServerList(filterServerList);
+        requestBody.setFilterServerList(filterServerList);//消息过滤服务器列表 。
         request.setBody(requestBody.encode());
 
         if (oneway) {

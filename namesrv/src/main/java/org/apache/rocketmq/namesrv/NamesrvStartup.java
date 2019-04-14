@@ -47,13 +47,16 @@ public class NamesrvStartup {
     }
 
     public static NamesrvController main0(String[] args) {
+        //rocketmq.remoting.version 默认版本是V4_1_0_SNAPSHOT
         System.setProperty(RemotingCommand.REMOTING_VERSION_KEY, Integer.toString(MQVersion.CURRENT_VERSION));
-
+           //key-->com.rocketmq.remoting.socket.sndbuf.size
         if (null == System.getProperty(NettySystemConfig.COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE)) {
+            //默认大小为4096 4k
             NettySystemConfig.socketSndbufSize = 4096;
         }
-
+          //key-->com.rocketmq.remoting.socket.rcvbuf.size
         if (null == System.getProperty(NettySystemConfig.COM_ROCKETMQ_REMOTING_SOCKET_RCVBUF_SIZE)) {
+            //默认大小也是4096 4k
             NettySystemConfig.socketRcvbufSize = 4096;
         }
 
@@ -61,6 +64,7 @@ public class NamesrvStartup {
             //PackageConflictDetect.detectFastjson();
 
             Options options = ServerUtil.buildCommandlineOptions(new Options());
+            //解析Java配置的命令行
             commandLine =
                 ServerUtil.parseCmdLine("mqnamesrv", args, buildCommandlineOptions(options),
                     new PosixParser());
@@ -68,16 +72,21 @@ public class NamesrvStartup {
                 System.exit(-1);
                 return null;
             }
-
+            //创建两个关键的配置
             final NamesrvConfig namesrvConfig = new NamesrvConfig();
             final NettyServerConfig nettyServerConfig = new NettyServerConfig();
+            //netty默认监听的端口为9876
             nettyServerConfig.setListenPort(9876);
+            // -c configFile通过，c命令指定配置文件的路径
+            //使用“一属性名 属性值”，例如一listenPort9876。
             if (commandLine.hasOption('c')) {
                 String file = commandLine.getOptionValue('c');
                 if (file != null) {
+                    //将配置文件读取
                     InputStream in = new BufferedInputStream(new FileInputStream(file));
                     properties = new Properties();
                     properties.load(in);
+                    //解析配置文件里面的配置
                     MixAll.properties2Object(properties, namesrvConfig);
                     MixAll.properties2Object(properties, nettyServerConfig);
 
@@ -122,7 +131,7 @@ public class NamesrvStartup {
                 controller.shutdown();
                 System.exit(-3);
             }
-
+            //注册JVM钩子函数并启动服务器，以便监昕 Broker、消息生产者 的网络请求 。
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 private volatile boolean hasShutdown = false;
                 private AtomicInteger shutdownTimes = new AtomicInteger(0);

@@ -21,7 +21,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 线程工厂类实现
+ * 线程工厂类实现，就是重写了线程池中线程的名字
  */
 public class ThreadFactoryImpl implements ThreadFactory {
 
