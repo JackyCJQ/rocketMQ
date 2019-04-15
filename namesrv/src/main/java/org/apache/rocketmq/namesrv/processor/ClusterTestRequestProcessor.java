@@ -31,6 +31,9 @@ import org.apache.rocketmq.tools.admin.DefaultMQAdminExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 集群测试请求
+ */
 public class ClusterTestRequestProcessor extends DefaultRequestProcessor {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
     private final DefaultMQAdminExt adminExt;

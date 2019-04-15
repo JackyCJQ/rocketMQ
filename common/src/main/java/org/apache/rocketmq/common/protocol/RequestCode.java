@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.common.protocol;
 
+/**
+ * 请求码处理
+ */
 public class RequestCode {
 
     public static final int SEND_MESSAGE = 10;
@@ -25,11 +28,11 @@ public class RequestCode {
      * 拉取 消息
      * Consumer => Broker
      * 时间：
-     *      - consumer拉取消息
+     * - consumer拉取消息
      * 请求：
-     *      - header：{@link org.apache.rocketmq.common.protocol.header.PullMessageRequestHeader}
+     * - header：{@link org.apache.rocketmq.common.protocol.header.PullMessageRequestHeader}
      * 响应：
-     *      - header: {@link org.apache.rocketmq.common.protocol.header.PullMessageResponseHeader}
+     * - header: {@link org.apache.rocketmq.common.protocol.header.PullMessageResponseHeader}
      */
     public static final int PULL_MESSAGE = 11;
 
@@ -91,15 +94,15 @@ public class RequestCode {
      * 注册 Broker
      * Broker => Namesrv
      * 时间：
-     *      - Broker 初始化启动时
-     *      - Broker 每30秒注册次
+     * - Broker 初始化启动时
+     * - Broker 每30秒注册次
      */
     public static final int REGISTER_BROKER = 103;
     /**
      * 移除注册 Broker
      * Broker => Namesrv
      * 时间：
-     *      - Broker 关闭时
+     * - Broker 关闭时
      */
     @SuppressWarnings("SpellCheckingInspection")
     public static final int UNREGISTER_BROKER = 104;

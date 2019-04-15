@@ -21,15 +21,15 @@ package org.apache.rocketmq.common.constant;
  */
 public class PermName {
     /**
-     * TODO 待读
+     * 优先级
      */
     public static final int PERM_PRIORITY = 0x1 << 3;
     /**
-     * 读
+     * 读权限
      */
     public static final int PERM_READ = 0x1 << 2;
     /**
-     * 写
+     * 写权限
      */
     public static final int PERM_WRITE = 0x1 << 1;
     /**

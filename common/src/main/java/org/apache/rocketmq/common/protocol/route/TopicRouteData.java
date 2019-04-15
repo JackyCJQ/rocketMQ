@@ -33,7 +33,7 @@ public class TopicRouteData extends RemotingSerializable {
 
     /**
      * 顺序消息配置。
-     * 格式为=》BrokerName1:QueueId1;BrokerName2:QueueId2;...BrokerNameN:QueueIdN
+     * 格式为=>BrokerName1:QueueId1;BrokerName2:QueueId2;...BrokerNameN:QueueIdN
      */
     private String orderTopicConf;
     /**

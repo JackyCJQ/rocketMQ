@@ -60,22 +60,21 @@ public class NamesrvController {
     private ExecutorService remotingExecutor;
 
     private Configuration configuration;
-
+    //从NameserverStartup传递过来的配置
     public NamesrvController(NamesrvConfig namesrvConfig, NettyServerConfig nettyServerConfig) {
         this.namesrvConfig = namesrvConfig;
         this.nettyServerConfig = nettyServerConfig;
+        //对于k/v配置的管理
         this.kvConfigManager = new KVConfigManager(this);
+        //路由管理
         this.routeInfoManager = new RouteInfoManager();
         this.brokerHousekeepingService = new BrokerHousekeepingService(this);
-        this.configuration = new Configuration(
-                log,
-                this.namesrvConfig, this.nettyServerConfig
-        );
+        this.configuration = new Configuration(log, this.namesrvConfig, this.nettyServerConfig);
         this.configuration.setStorePathFromConfig(this.namesrvConfig, "configStorePath");
     }
-
+   //开始进行初始化
     public boolean initialize() {
-        //加载 KV 配置
+        //加载 KV 配置。从本地文件中读取配置
         this.kvConfigManager.load();
         //创建 NettyServer 网络处理对象
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
@@ -119,6 +118,7 @@ public class NamesrvController {
         this.remotingServer.start();
     }
 
+    //结束时终止的顺序
     public void shutdown() {
         this.remotingServer.shutdown();
         this.remotingExecutor.shutdown();

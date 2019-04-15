@@ -17,33 +17,44 @@
 
 package org.apache.rocketmq.common.protocol.body;
 
+import org.apache.rocketmq.common.protocol.route.BrokerData;
+import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import org.apache.rocketmq.common.protocol.route.BrokerData;
-import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
+/**
+ * 集群信息
+ */
 public class ClusterInfo extends RemotingSerializable {
+    //单个borker信息
     private HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
+    //集群的信息
     private HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
 
+    //获取所有的broker信息
     public HashMap<String, BrokerData> getBrokerAddrTable() {
         return brokerAddrTable;
     }
 
+    //设置所有的broker信息
     public void setBrokerAddrTable(HashMap<String, BrokerData> brokerAddrTable) {
         this.brokerAddrTable = brokerAddrTable;
     }
 
+    //获取所有的集群信息
     public HashMap<String, Set<String>> getClusterAddrTable() {
         return clusterAddrTable;
     }
 
+    //设置所有的集群信息
     public void setClusterAddrTable(HashMap<String, Set<String>> clusterAddrTable) {
         this.clusterAddrTable = clusterAddrTable;
     }
 
+    //返回一个集群中所有的broker
     public String[] retrieveAllAddrByCluster(String cluster) {
         List<String> addrs = new ArrayList<String>();
         if (clusterAddrTable.containsKey(cluster)) {
@@ -56,10 +67,14 @@ public class ClusterInfo extends RemotingSerializable {
             }
         }
 
-        return addrs.toArray(new String[] {});
+        return addrs.toArray(new String[]{});
     }
 
+    /**
+     * 获取所有集群的名字
+     * @return
+     */
     public String[] retrieveAllClusterNames() {
-        return clusterAddrTable.keySet().toArray(new String[] {});
+        return clusterAddrTable.keySet().toArray(new String[]{});
     }
 }

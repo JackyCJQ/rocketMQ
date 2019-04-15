@@ -19,6 +19,9 @@ package org.apache.rocketmq.common.namesrv;
 
 import org.apache.rocketmq.common.protocol.body.KVTable;
 
+/**
+ * 注册broler的返回结果
+ */
 public class RegisterBrokerResult {
     /**
      * ha服务器地址
@@ -28,7 +31,7 @@ public class RegisterBrokerResult {
      * master服务器地址
      */
     private String masterAddr;
-    // TODO  疑问：干啥用？
+
     private KVTable kvTable;
 
     public String getHaServerAddr() {

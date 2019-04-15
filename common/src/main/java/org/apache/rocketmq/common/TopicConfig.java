@@ -18,16 +18,24 @@ package org.apache.rocketmq.common;
 
 import org.apache.rocketmq.common.constant.PermName;
 
+/**
+ * topic配置
+ */
 public class TopicConfig {
     private static final String SEPARATOR = " ";
+    //默认读写队列的长度
     public static int defaultReadQueueNums = 16;
     public static int defaultWriteQueueNums = 16;
+    //topic的名字
     private String topicName;
     private int readQueueNums = defaultReadQueueNums;
     private int writeQueueNums = defaultWriteQueueNums;
+    //权限设置
     private int perm = PermName.PERM_READ | PermName.PERM_WRITE;
+    //默认过滤类型是单标签的
     private TopicFilterType topicFilterType = TopicFilterType.SINGLE_TAG;
     private int topicSysFlag = 0;
+    //默认是无序的
     private boolean order = false;
 
     public TopicConfig() {
@@ -44,31 +52,35 @@ public class TopicConfig {
         this.perm = perm;
     }
 
+    /**
+     * 这个应该是持久化的时候用吧
+     * @return
+     */
     public String encode() {
         StringBuilder sb = new StringBuilder();
 
-        // 1
         sb.append(this.topicName);
         sb.append(SEPARATOR);
 
-        // 2
         sb.append(this.readQueueNums);
         sb.append(SEPARATOR);
 
-        // 3
         sb.append(this.writeQueueNums);
         sb.append(SEPARATOR);
 
-        // 4
         sb.append(this.perm);
         sb.append(SEPARATOR);
 
-        // 5
         sb.append(this.topicFilterType);
 
         return sb.toString();
     }
 
+    /**
+     * 从字符串中反解出对应的信息
+     * @param in
+     * @return
+     */
     public boolean decode(final String in) {
         String[] strs = in.split(SEPARATOR);
         if (strs != null && strs.length == 5) {
