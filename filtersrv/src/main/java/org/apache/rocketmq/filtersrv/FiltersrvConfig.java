@@ -21,10 +21,14 @@ import org.apache.rocketmq.common.MixAll;
 import org.apache.rocketmq.common.annotation.ImportantField;
 import org.apache.rocketmq.remoting.common.RemotingUtil;
 
+/**
+ * 过滤服务配置
+ */
 public class FiltersrvConfig {
+    //都需要配置rocketMqhome
     private String rocketmqHome = System.getProperty(MixAll.ROCKETMQ_HOME_PROPERTY,
         System.getenv(MixAll.ROCKETMQ_HOME_ENV));
-
+     //得有nameserver注册中心
     @ImportantField
     private String namesrvAddr = System.getProperty(MixAll.NAMESRV_ADDR_PROPERTY,
         System.getenv(MixAll.NAMESRV_ADDR_ENV));
@@ -32,6 +36,7 @@ public class FiltersrvConfig {
     private String connectWhichBroker = "127.0.0.1:10911";
     private String filterServerIP = RemotingUtil.getLocalAddress();
 
+    //信息压缩得处理
     private int compressMsgBodyOverHowmuch = 1024 * 8;
     private int zipCompressLevel = 5;
 

@@ -16,7 +16,6 @@
  */
 package org.apache.rocketmq.remoting.netty;
 
-import com.sun.corba.se.pept.broker.Broker;
 
 /**
  * Netty Server 配置

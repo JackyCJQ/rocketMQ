@@ -44,23 +44,26 @@ public class FilterClassManager {
      */
     private final Object compileLock = new Object();
     private final FiltersrvController filtersrvController;
-
+    //创建一个线程池，定时去获取过滤器类
     private final ScheduledExecutorService scheduledExecutorService = Executors
-        .newSingleThreadScheduledExecutor(new ThreadFactoryImpl("FSGetClassScheduledThread"));
+            .newSingleThreadScheduledExecutor(new ThreadFactoryImpl("FSGetClassScheduledThread"));
 
     /**
      * 过滤类信息映射
      */
     private ConcurrentHashMap<String/* topic@consumerGroup */, FilterClassInfo> filterClassTable =
             new ConcurrentHashMap<>(128);
-
+    /**
+     * 类获取的方式
+     */
     private FilterClassFetchMethod filterClassFetchMethod;
 
     public FilterClassManager(FiltersrvController filtersrvController) {
         this.filtersrvController = filtersrvController;
         this.filterClassFetchMethod =
-            new HttpFilterClassFetchMethod(this.filtersrvController.getFiltersrvConfig()
-                .getFilterClassRepertoryUrl());
+                //url来自于配置文件
+                new HttpFilterClassFetchMethod(this.filtersrvController.getFiltersrvConfig()
+                        .getFilterClassRepertoryUrl());
     }
 
     private static String buildKey(final String consumerGroup, final String topic) {
@@ -79,6 +82,9 @@ public class FilterClassManager {
         }
     }
 
+    /**
+     * 定时去更新过滤器类
+     */
     private void fetchClassFromRemoteHost() {
         Iterator<Entry<String, FilterClassInfo>> it = this.filterClassTable.entrySet().iterator();
         while (it.hasNext()) {
@@ -87,20 +93,20 @@ public class FilterClassManager {
                 FilterClassInfo filterClassInfo = next.getValue();
                 String[] topicAndGroup = next.getKey().split("@");
                 String responseStr =
-                    this.filterClassFetchMethod.fetch(topicAndGroup[0], topicAndGroup[1],
-                        filterClassInfo.getClassName());
+                        this.filterClassFetchMethod.fetch(topicAndGroup[0], topicAndGroup[1],
+                                filterClassInfo.getClassName());
                 byte[] filterSourceBinary = responseStr.getBytes("UTF-8");
                 int classCRC = UtilAll.crc32(responseStr.getBytes("UTF-8"));
                 if (classCRC != filterClassInfo.getClassCRC()) {
                     String javaSource = new String(filterSourceBinary, MixAll.DEFAULT_CHARSET);
                     Class<?> newClass =
-                        DynaCode.compileAndLoadClass(filterClassInfo.getClassName(), javaSource);
+                            DynaCode.compileAndLoadClass(filterClassInfo.getClassName(), javaSource);
                     Object newInstance = newClass.newInstance();
                     filterClassInfo.setMessageFilter((MessageFilter) newInstance);
                     filterClassInfo.setClassCRC(classCRC);
 
                     log.info("fetch Remote class File OK, {} {}", next.getKey(),
-                        filterClassInfo.getClassName());
+                            filterClassInfo.getClassName());
                 }
             } catch (Exception e) {
                 log.error("fetchClassFromRemoteHost Exception", e);
@@ -115,15 +121,15 @@ public class FilterClassManager {
     /**
      * 注册过滤类
      *
-     * @param consumerGroup 消费分组
-     * @param topic Topic
-     * @param className 过滤类名
-     * @param classCRC 过滤类源码CRC
+     * @param consumerGroup      消费分组
+     * @param topic              Topic
+     * @param className          过滤类名
+     * @param classCRC           过滤类源码CRC
      * @param filterSourceBinary 过滤类源码
      * @return 是否注册成功
      */
     public boolean registerFilterClass(final String consumerGroup, final String topic,
-        final String className, final int classCRC, final byte[] filterSourceBinary) {
+                                       final String className, final int classCRC, final byte[] filterSourceBinary) {
         final String key = buildKey(consumerGroup, topic);
         // 判断是否要注册新的过滤类
         boolean registerNew = false;
@@ -163,7 +169,7 @@ public class FilterClassManager {
                     this.filterClassTable.put(key, filterClassInfoNew);
                 } catch (Throwable e) {
                     String info = String.format("FilterServer, registerFilterClass Exception, consumerGroup: %s topic: %s className: %s",
-                                consumerGroup, topic, className);
+                            consumerGroup, topic, className);
                     log.error(info, e);
                     return false;
                 }

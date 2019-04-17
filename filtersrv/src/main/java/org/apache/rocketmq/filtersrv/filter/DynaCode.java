@@ -17,24 +17,6 @@
 
 package org.apache.rocketmq.filtersrv.filter;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.common.constant.LoggerName;
@@ -43,6 +25,18 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.util.*;
+
+/**
+ * 对类进行重新编译
+ */
 public class DynaCode {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggerName.FILTERSRV_LOGGER_NAME);
 
@@ -51,7 +45,7 @@ public class DynaCode {
     private static final String LINE_SP = System.getProperty("line.separator");
 
     private String sourcePath = System.getProperty("user.home") + FILE_SP + "rocketmq_filter_class" + FILE_SP
-        + UtilAll.getPid();
+            + UtilAll.getPid();
 
     private String outPutClassPath = sourcePath;
 
@@ -116,7 +110,7 @@ public class DynaCode {
     }
 
     public static Class<?> compileAndLoadClass(final String className, final String javaSource)
-        throws Exception {
+            throws Exception {
         String classSimpleName = FilterAPI.simpleClassName(className);
         String javaCode = javaSource;
 
@@ -178,7 +172,7 @@ public class DynaCode {
 
     public static String getPackageName(String code) {
         String packageName =
-            StringUtils.substringBefore(StringUtils.substringAfter(code, "package "), ";").trim();
+                StringUtils.substringBefore(StringUtils.substringAfter(code, "package "), ";").trim();
         return packageName;
     }
 
@@ -237,7 +231,7 @@ public class DynaCode {
                             srcFile.deleteOnExit();
                         }
                         OutputStreamWriter outputStreamWriter =
-                            new OutputStreamWriter(new FileOutputStream(srcFile), encoding);
+                                new OutputStreamWriter(new FileOutputStream(srcFile), encoding);
                         bufferWriter = new BufferedWriter(outputStreamWriter);
                         for (String lineCode : code.split(LINE_SP)) {
                             bufferWriter.write(lineCode);
@@ -261,7 +255,7 @@ public class DynaCode {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) {
             throw new NullPointerException(
-                "ToolProvider.getSystemJavaCompiler() return null,please use JDK replace JRE!");
+                    "ToolProvider.getSystemJavaCompiler() return null,please use JDK replace JRE!");
         }
         int resultCode = compiler.run(null, null, err, args);
         if (resultCode != 0) {
@@ -272,8 +266,8 @@ public class DynaCode {
     private void loadClass(Set<String> classFullNames) throws ClassNotFoundException, MalformedURLException {
         synchronized (loadClass) {
             ClassLoader classLoader =
-                new URLClassLoader(new URL[] {new File(outPutClassPath).toURI().toURL()},
-                    parentClassLoader);
+                    new URLClassLoader(new URL[]{new File(outPutClassPath).toURI().toURL()},
+                            parentClassLoader);
             for (String key : classFullNames) {
                 Class<?> classz = classLoader.loadClass(key);
                 if (null != classz) {

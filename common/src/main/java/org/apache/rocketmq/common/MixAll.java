@@ -70,7 +70,6 @@ public class MixAll {
 
     public static final String RETRY_GROUP_TOPIC_PREFIX = "%RETRY%";
 
-    // TODO 待读
     public static final String DLQ_GROUP_TOPIC_PREFIX = "%DLQ%";
     public static final String SYSTEM_TOPIC_PREFIX = "rmq_sys_";
     public static final String UNIQUE_MSG_QUERY_FLAG = "_UNIQUE_KEY_QUERY";

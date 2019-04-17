@@ -31,12 +31,14 @@ import org.apache.rocketmq.remoting.netty.NettyRemotingClient;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 public class FilterServerOuterAPI {
+    //远程链接客户端
     private final RemotingClient remotingClient;
 
     public FilterServerOuterAPI() {
         this.remotingClient = new NettyRemotingClient(new NettyClientConfig());
     }
 
+    //开启netty客户端
     public void start() {
         this.remotingClient.start();
     }
@@ -46,22 +48,25 @@ public class FilterServerOuterAPI {
     }
 
     public RegisterFilterServerResponseHeader registerFilterServerToBroker(
-        final String brokerAddr,
-        final String filterServerAddr
+            final String brokerAddr,
+            final String filterServerAddr
     ) throws RemotingCommandException, RemotingConnectException, RemotingSendRequestException,
-        RemotingTimeoutException, InterruptedException, MQBrokerException {
+            RemotingTimeoutException, InterruptedException, MQBrokerException {
+        //请求头
         RegisterFilterServerRequestHeader requestHeader = new RegisterFilterServerRequestHeader();
         requestHeader.setFilterServerAddr(filterServerAddr);
+        //创建对应得远程请求得命令
         RemotingCommand request =
-            RemotingCommand.createRequestCommand(RequestCode.REGISTER_FILTER_SERVER, requestHeader);
-
+                RemotingCommand.createRequestCommand(RequestCode.REGISTER_FILTER_SERVER, requestHeader);
+        //同步远程调用
         RemotingCommand response = this.remotingClient.invokeSync(brokerAddr, request, 3000);
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.SUCCESS: {
+                //反解出信息
                 RegisterFilterServerResponseHeader responseHeader =
-                    (RegisterFilterServerResponseHeader) response
-                        .decodeCommandCustomHeader(RegisterFilterServerResponseHeader.class);
+                        (RegisterFilterServerResponseHeader) response
+                                .decodeCommandCustomHeader(RegisterFilterServerResponseHeader.class);
 
                 return responseHeader;
             }

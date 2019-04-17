@@ -19,9 +19,15 @@ package org.apache.rocketmq.filtersrv.filter;
 
 import org.apache.rocketmq.common.filter.MessageFilter;
 
+/**
+ * 过滤类的信息
+ */
 public class FilterClassInfo {
+    //配置的过滤类的名字
     private String className;
+    //传输的时间进行完整性校验用的
     private int classCRC;
+    //匹配的消息
     private MessageFilter messageFilter;
 
     public int getClassCRC() {

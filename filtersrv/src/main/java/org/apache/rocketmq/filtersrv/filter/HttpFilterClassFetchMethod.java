@@ -23,6 +23,9 @@ import org.apache.rocketmq.common.utils.HttpTinyClient.HttpResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 通过http的方式来获取class
+ */
 public class HttpFilterClassFetchMethod implements FilterClassFetchMethod {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.FILTERSRV_LOGGER_NAME);
     private final String url;
@@ -42,7 +45,7 @@ public class HttpFilterClassFetchMethod implements FilterClassFetchMethod {
             }
         } catch (Exception e) {
             log.error(
-                String.format("call <%s> exception, Topic: %s Group: %s", thisUrl, topic, consumerGroup), e);
+                    String.format("call <%s> exception, Topic: %s Group: %s", thisUrl, topic, consumerGroup), e);
         }
 
         return null;

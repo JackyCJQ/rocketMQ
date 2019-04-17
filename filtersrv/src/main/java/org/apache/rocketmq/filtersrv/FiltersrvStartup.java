@@ -18,11 +18,6 @@ package org.apache.rocketmq.filtersrv;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -36,6 +31,12 @@ import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 import org.apache.rocketmq.srvutil.ServerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class FiltersrvStartup {
     public static Logger log;
@@ -61,12 +62,13 @@ public class FiltersrvStartup {
     }
 
     public static FiltersrvController createController(String[] args) {
+        //获取版本信息
         System.setProperty(RemotingCommand.REMOTING_VERSION_KEY, Integer.toString(MQVersion.CURRENT_VERSION));
-
+        //配置netty发送数据缓存大小
         if (null == System.getProperty(NettySystemConfig.COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE)) {
             NettySystemConfig.socketSndbufSize = 65535;
         }
-
+        //netty接受数据缓存大小
         if (null == System.getProperty(NettySystemConfig.COM_ROCKETMQ_REMOTING_SOCKET_RCVBUF_SIZE)) {
             NettySystemConfig.socketRcvbufSize = 1024;
         }
@@ -74,8 +76,8 @@ public class FiltersrvStartup {
         try {
             Options options = ServerUtil.buildCommandlineOptions(new Options());
             final CommandLine commandLine =
-                ServerUtil.parseCmdLine("mqfiltersrv", args, buildCommandlineOptions(options),
-                    new PosixParser());
+                    ServerUtil.parseCmdLine("mqfiltersrv", args, buildCommandlineOptions(options),
+                            new PosixParser());
             if (null == commandLine) {
                 System.exit(-1);
                 return null;
@@ -83,7 +85,7 @@ public class FiltersrvStartup {
 
             final FiltersrvConfig filtersrvConfig = new FiltersrvConfig();
             final NettyServerConfig nettyServerConfig = new NettyServerConfig();
-
+            //指定对应的配置文件
             if (commandLine.hasOption('c')) {
                 String file = commandLine.getOptionValue('c');
                 if (file != null) {
@@ -104,7 +106,7 @@ public class FiltersrvStartup {
             nettyServerConfig.setListenPort(0);
             nettyServerConfig.setServerAsyncSemaphoreValue(filtersrvConfig.getFsServerAsyncSemaphoreValue());
             nettyServerConfig.setServerCallbackExecutorThreads(filtersrvConfig
-                .getFsServerCallbackExecutorThreads());
+                    .getFsServerCallbackExecutorThreads());
             nettyServerConfig.setServerWorkerThreads(filtersrvConfig.getFsServerWorkerThreads());
 
             if (commandLine.hasOption('p')) {
@@ -116,7 +118,7 @@ public class FiltersrvStartup {
             MixAll.properties2Object(ServerUtil.commandLine2Properties(commandLine), filtersrvConfig);
             if (null == filtersrvConfig.getRocketmqHome()) {
                 System.out.printf("Please set the " + MixAll.ROCKETMQ_HOME_ENV
-                    + " variable in your environment to match the location of the RocketMQ installation%n");
+                        + " variable in your environment to match the location of the RocketMQ installation%n");
                 System.exit(-2);
             }
 
@@ -128,7 +130,7 @@ public class FiltersrvStartup {
             log = LoggerFactory.getLogger(LoggerName.FILTERSRV_LOGGER_NAME);
 
             final FiltersrvController controller =
-                new FiltersrvController(filtersrvConfig, nettyServerConfig);
+                    new FiltersrvController(filtersrvConfig, nettyServerConfig);
             boolean initResult = controller.initialize();
             if (!initResult) {
                 controller.shutdown();
