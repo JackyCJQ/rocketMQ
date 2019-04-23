@@ -18,6 +18,9 @@ package org.apache.rocketmq.remoting;
 
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 
+/**
+ * broker与namesrv交互时，携带的请求头信息
+ */
 public interface CommandCustomHeader {
     void checkFields() throws RemotingCommandException;
 }

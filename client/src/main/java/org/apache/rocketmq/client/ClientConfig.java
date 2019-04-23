@@ -23,19 +23,24 @@ import org.apache.rocketmq.remoting.common.RemotingUtil;
 /**
  * Client Common configuration
  */
-// TODO 疑问：为什么选择继承，组合会不会更好一些
 public class ClientConfig {
     public static final String SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY = "com.rocketmq.sendMessageWithVIPChannel";
+    //获取系统配置的nameSrv的地址
     private String namesrvAddr = System.getProperty(MixAll.NAMESRV_ADDR_PROPERTY, System.getenv(MixAll.NAMESRV_ADDR_ENV));
+    //获取本地IP
     private String clientIP = RemotingUtil.getLocalAddress();
+    //client的名字 如果没有指定默认使用default
     private String instanceName = System.getProperty("rocketmq.client.name", "DEFAULT");
+    //获取cpu的数量
     private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
     /**
      * Pulling topic information interval from the named server
+     * 默认每30秒从namesrv拉取topic信息
      */
     private int pollNameServerInteval = 1000 * 30;
     /**
      * Heartbeat interval in microseconds with message broker
+     * 默认心跳也是30s
      */
     private int heartbeatBrokerInterval = 1000 * 30;
     /**
@@ -43,7 +48,8 @@ public class ClientConfig {
      */
     private int persistConsumerOffsetInterval = 1000 * 5;
     private boolean unitMode = false;
-    private String unitName;
+    private String unitName;//这个名字代表什么
+    //默认是vip通道
     private boolean vipChannelEnabled = Boolean.parseBoolean(System.getProperty(SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY, "true"));
 
     /**

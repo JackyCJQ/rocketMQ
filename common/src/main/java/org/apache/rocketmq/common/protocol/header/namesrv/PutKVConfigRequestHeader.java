@@ -21,13 +21,16 @@ import org.apache.rocketmq.remoting.CommandCustomHeader;
 import org.apache.rocketmq.remoting.annotation.CFNotNull;
 import org.apache.rocketmq.remoting.exception.RemotingCommandException;
 
+/**
+ * 请求添加k/v配置的请求头
+ */
 public class PutKVConfigRequestHeader implements CommandCustomHeader {
     @CFNotNull
-    private String namespace;
+    private String namespace; //对应的命名空间
     @CFNotNull
-    private String key;
+    private String key; //对应的k
     @CFNotNull
-    private String value;
+    private String value;//对应的v
 
     @Override
     public void checkFields() throws RemotingCommandException {

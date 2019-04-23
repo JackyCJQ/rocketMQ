@@ -29,9 +29,9 @@ import java.util.Set;
  * 集群信息
  */
 public class ClusterInfo extends RemotingSerializable {
-    //单个borker信息
+    //该集群中所拥有的broker
     private HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
-    //集群的信息
+    //对应的所有的集群的信息
     private HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
 
     //获取所有的broker信息
@@ -54,7 +54,7 @@ public class ClusterInfo extends RemotingSerializable {
         this.clusterAddrTable = clusterAddrTable;
     }
 
-    //返回一个集群中所有的broker
+    //返回一个集群中所有的broker的Addrs，包括同一个broke名字的多个节点
     public String[] retrieveAllAddrByCluster(String cluster) {
         List<String> addrs = new ArrayList<String>();
         if (clusterAddrTable.containsKey(cluster)) {

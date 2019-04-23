@@ -40,7 +40,7 @@ public class SendResult {
      */
     private long queueOffset;
     /**
-     * TODO 待读：
+     * 对应的事务ID
      */
     private String transactionId;
     /**

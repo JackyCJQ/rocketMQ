@@ -17,12 +17,14 @@
 package org.apache.rocketmq.remoting.protocol;
 
 import com.alibaba.fastjson.JSON;
+
 import java.nio.charset.Charset;
 
 public abstract class RemotingSerializable {
     //编码方式都是utf-8
     private final static Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
+    //encode是编码操作
     public static byte[] encode(final Object obj) {
         final String json = toJson(obj, false);
         if (json != null) {
@@ -30,11 +32,13 @@ public abstract class RemotingSerializable {
         }
         return null;
     }
+
     //利用fastJson,生成字符串
     public static String toJson(final Object obj, boolean prettyFormat) {
         return JSON.toJSONString(obj, prettyFormat);
     }
 
+    //decode是解码操作
     public static <T> T decode(final byte[] data, Class<T> classOfT) {
         final String json = new String(data, CHARSET_UTF8);
         return fromJson(json, classOfT);

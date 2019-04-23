@@ -16,10 +16,16 @@
  */
 package org.apache.rocketmq.common;
 
+/**
+ * 对于mq的版本进行了记录
+ */
 public class MQVersion {
-
+    //这个就是记录的序列
     public static final int CURRENT_VERSION = Version.V4_1_0_SNAPSHOT.ordinal();
 
+    /*
+      获取这个枚举的名字
+     */
     public static String getVersionDesc(int value) {
         try {
             Version v = Version.values()[value];
@@ -30,6 +36,11 @@ public class MQVersion {
         return "HigherVersion";
     }
 
+    /**
+     * 根据索引获取这个枚举类 从枚举类中可以获取这个枚举的序列以及名字
+     * @param value
+     * @return
+     */
     public static Version value2Version(int value) {
         return Version.values()[value];
     }

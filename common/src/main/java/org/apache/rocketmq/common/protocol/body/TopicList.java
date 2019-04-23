@@ -18,6 +18,7 @@ package org.apache.rocketmq.common.protocol.body;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
 
 /**
@@ -25,7 +26,7 @@ import org.apache.rocketmq.remoting.protocol.RemotingSerializable;
  */
 public class TopicList extends RemotingSerializable {
     private Set<String> topicList = new HashSet<String>();
-    private String brokerAddr;
+    private String brokerAddr;//某个broker的地址
 
     public Set<String> getTopicList() {
         return topicList;

@@ -18,25 +18,34 @@
 package org.apache.rocketmq.remoting.netty;
 
 public class NettySystemConfig {
+    //
     public static final String COM_ROCKETMQ_REMOTING_NETTY_POOLED_BYTE_BUF_ALLOCATOR_ENABLE =
         "com.rocketmq.remoting.nettyPooledByteBufAllocatorEnable";
-    public static final String COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE = //
+    //发送大小
+    public static final String COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE =
         "com.rocketmq.remoting.socket.sndbuf.size";
-    public static final String COM_ROCKETMQ_REMOTING_SOCKET_RCVBUF_SIZE = //
+    //接收大小
+    public static final String COM_ROCKETMQ_REMOTING_SOCKET_RCVBUF_SIZE =
         "com.rocketmq.remoting.socket.rcvbuf.size";
-    public static final String COM_ROCKETMQ_REMOTING_CLIENT_ASYNC_SEMAPHORE_VALUE = //
+    //客户端异步信号
+    public static final String COM_ROCKETMQ_REMOTING_CLIENT_ASYNC_SEMAPHORE_VALUE =
         "com.rocketmq.remoting.clientAsyncSemaphoreValue";
-    public static final String COM_ROCKETMQ_REMOTING_CLIENT_ONEWAY_SEMAPHORE_VALUE = //
+    //客户端直接发送信号
+    public static final String COM_ROCKETMQ_REMOTING_CLIENT_ONEWAY_SEMAPHORE_VALUE =
         "com.rocketmq.remoting.clientOnewaySemaphoreValue";
-    public static final boolean NETTY_POOLED_BYTE_BUF_ALLOCATOR_ENABLE = //
-        Boolean
-            .parseBoolean(System.getProperty(COM_ROCKETMQ_REMOTING_NETTY_POOLED_BYTE_BUF_ALLOCATOR_ENABLE, "false"));
-    public static final int CLIENT_ASYNC_SEMAPHORE_VALUE = //
+    //默认为false
+    public static final boolean NETTY_POOLED_BYTE_BUF_ALLOCATOR_ENABLE =
+        Boolean.parseBoolean(System.getProperty(COM_ROCKETMQ_REMOTING_NETTY_POOLED_BYTE_BUF_ALLOCATOR_ENABLE, "false"));
+    //客户端异步信号，默认是65535
+    public static final int CLIENT_ASYNC_SEMAPHORE_VALUE =
         Integer.parseInt(System.getProperty(COM_ROCKETMQ_REMOTING_CLIENT_ASYNC_SEMAPHORE_VALUE, "65535"));
-    public static final int CLIENT_ONEWAY_SEMAPHORE_VALUE = //
+    //客户端直接发送信号 默认也是65535
+    public static final int CLIENT_ONEWAY_SEMAPHORE_VALUE =
         Integer.parseInt(System.getProperty(COM_ROCKETMQ_REMOTING_CLIENT_ONEWAY_SEMAPHORE_VALUE, "65535"));
-    public static int socketSndbufSize = //
+    //发送大小 默认65535
+    public static int socketSndbufSize =
         Integer.parseInt(System.getProperty(COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE, "65535"));
-    public static int socketRcvbufSize = //
+    //接收大小 默认65535
+    public static int socketRcvbufSize =
         Integer.parseInt(System.getProperty(COM_ROCKETMQ_REMOTING_SOCKET_RCVBUF_SIZE, "65535"));
 }

@@ -42,38 +42,35 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * RocketMQ 基于订阅发布机制 ，一个Topic拥有多个消息队列 ，一个Broker为每一主题默认创建4个读队列4个写队列 。
- * 多个Broker组成一个集群，BrokerName由相同的多台Broker组成Master-Slave架构 ，brokerId为0代表Master大于0表示Slave。
+ * 多个Broker组成一个集群，BrokerName由相同的多台Broker组成Master-Slave架构 ，brokerId为0代表Master，大于0表示Slave。
  * BrokerLivelnfo 中 的 lastUpdateTimestamp 存储上次收到 Broker 心跳包的时间 。
  */
 public class RouteInfoManager {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
     //过期时间默认为2分钟
     private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
+    //读写锁
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     /**
-     * topic 与 队列数据数组 Map
      * 一个 topic 可以对应 多个Broker
      * Topic 消息队列路由信息，消息发送时根据路由表进行负载均衡
      */
     private final HashMap<String/* topic */, List<QueueData>> topicQueueTable;
     /**
-     * broker名 与 broker数据 Map
-     * 一个broker名下可以有多个broker，即broker可以同名
-     * Broker 基础信息， 包含 brokerName、 所属集群名称 、 主备 Broker地址。
+     * 一个broker名下可以有多个broker，即broker可以同名，主从
+     * Broker基础信息，包含 brokerName、所属集群名称、主备 Broker地址。
      */
     private final HashMap<String/* brokerName */, BrokerData> brokerAddrTable;
     /**
-     * 集群 与 broker集合 Map
-     * Broker 集群信息，存储集群中所有 Broker 名称 。
+     * Broker 集群信息，存储集群中所有Broker名称 。
      */
     private final HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
     /**
-     * broker地址 与 broker连接信息 Map
+     * broker地址 与 broker信息
      * Broker状态信息,NameServer每次收到心跳包时会替换该信息 。
      */
     private final HashMap<String/* brokerAddr */, BrokerLiveInfo> brokerLiveTable;
     /**
-     * broker地址 与 filtersrv数组 Map
      * Broker上的 FilterServer列表，用于类模式消息过滤，
      */
     private final HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
@@ -87,7 +84,10 @@ public class RouteInfoManager {
         this.filterServerTable = new HashMap<String, List<String>>(256);
     }
 
-    //重新分装了一下，生成字节的方式
+    /**
+     *返回集群信息
+     * @return
+     */
     public byte[] getAllClusterInfo() {
         ClusterInfo clusterInfoSerializeWrapper = new ClusterInfo();
         clusterInfoSerializeWrapper.setBrokerAddrTable(this.brokerAddrTable);
@@ -96,7 +96,7 @@ public class RouteInfoManager {
     }
 
     /**
-     * 删除某个topic，这个时候就看出读写锁的好处了
+     * 删除某个topic
      */
     public void deleteTopic(final String topic) {
         try {
@@ -330,7 +330,6 @@ public class RouteInfoManager {
     }
 
     /**
-     *
      * @param brokerName
      * @return
      */
@@ -457,6 +456,7 @@ public class RouteInfoManager {
 
     /**
      * 挑选出topic路由信息
+     *
      * @param topic
      * @return
      */

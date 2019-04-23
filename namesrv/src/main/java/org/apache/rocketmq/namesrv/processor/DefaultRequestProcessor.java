@@ -44,7 +44,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 默认的处理netty请求的链接
+ * 默认的处理netty请求的链接，主要是处理broker的连接
  */
 public class DefaultRequestProcessor implements NettyRequestProcessor {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
@@ -54,7 +54,7 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
     public DefaultRequestProcessor(NamesrvController namesrvController) {
         this.namesrvController = namesrvController;
     }
-
+    //处理对于namesrv的请求
     @Override
     public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
         if (log.isDebugEnabled()) {
@@ -149,7 +149,7 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
             requestHeader.getKey(),
             requestHeader.getValue()
         );
-
+        //在重新封装返回结果
         response.setCode(ResponseCode.SUCCESS);
         response.setRemark(null);
         return response;
@@ -205,11 +205,13 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
         throws RemotingCommandException {
         final RemotingCommand response = RemotingCommand.createResponseCommand(RegisterBrokerResponseHeader.class);
         final RegisterBrokerResponseHeader responseHeader = (RegisterBrokerResponseHeader) response.readCustomHeader();
+        //获取注册的请求
         final RegisterBrokerRequestHeader requestHeader =
             (RegisterBrokerRequestHeader) request.decodeCommandCustomHeader(RegisterBrokerRequestHeader.class);
-
+        //创建一个注册请求的body
         RegisterBrokerBody registerBrokerBody = new RegisterBrokerBody();
 
+        //获取请求
         if (request.getBody() != null) {
             registerBrokerBody = RegisterBrokerBody.decode(request.getBody(), RegisterBrokerBody.class);
         } else {
@@ -218,20 +220,22 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
         }
 
         RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
-            requestHeader.getClusterName(),
-            requestHeader.getBrokerAddr(),
-            requestHeader.getBrokerName(),
-            requestHeader.getBrokerId(),
-            requestHeader.getHaServerAddr(),
-            registerBrokerBody.getTopicConfigSerializeWrapper(),
-            registerBrokerBody.getFilterServerList(),
+            requestHeader.getClusterName(),//所在集群的名字
+            requestHeader.getBrokerAddr(), //broker的地址
+            requestHeader.getBrokerName(), //broker的名字
+            requestHeader.getBrokerId(),   //broker的ID
+            requestHeader.getHaServerAddr(),//broker主节点的地址
+            registerBrokerBody.getTopicConfigSerializeWrapper(),//topic
+            registerBrokerBody.getFilterServerList(),//配置的过滤器
             ctx.channel());
 
         responseHeader.setHaServerAddr(result.getHaServerAddr());
+        //设置主节点的地址
         responseHeader.setMasterAddr(result.getMasterAddr());
 
-        // TODO 待读：顺序消息配置
+        //获取该命名空间的所有的配置
         byte[] jsonValue = this.namesrvController.getKvConfigManager().getKVListByNamespace(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG);
+        //返回对应的配置
         response.setBody(jsonValue);
 
         response.setCode(ResponseCode.SUCCESS);
@@ -250,10 +254,12 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
     private RemotingCommand registerBroker(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
         final RemotingCommand response = RemotingCommand.createResponseCommand(RegisterBrokerResponseHeader.class);
         final RegisterBrokerResponseHeader responseHeader = (RegisterBrokerResponseHeader) response.readCustomHeader();
+       //解析请求信息
         final RegisterBrokerRequestHeader requestHeader =
             (RegisterBrokerRequestHeader) request.decodeCommandCustomHeader(RegisterBrokerRequestHeader.class);
 
         TopicConfigSerializeWrapper topicConfigWrapper;
+        //如果携带了topic
         if (request.getBody() != null) {
             topicConfigWrapper = TopicConfigSerializeWrapper.decode(request.getBody(), TopicConfigSerializeWrapper.class);
         } else {
@@ -261,7 +267,7 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
             topicConfigWrapper.getDataVersion().setCounter(new AtomicLong(0));
             topicConfigWrapper.getDataVersion().setTimestamp(0);
         }
-
+        //进行注册少了过滤器相关信息
         RegisterBrokerResult result = this.namesrvController.getRouteInfoManager().registerBroker(
             requestHeader.getClusterName(),
             requestHeader.getBrokerAddr(),
@@ -274,8 +280,9 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
         );
 
         responseHeader.setHaServerAddr(result.getHaServerAddr());
+        //注册的是后返回主节点信息
         responseHeader.setMasterAddr(result.getMasterAddr());
-
+         //获取配置
         byte[] jsonValue = this.namesrvController.getKvConfigManager().getKVListByNamespace(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG);
         response.setBody(jsonValue);
         response.setCode(ResponseCode.SUCCESS);

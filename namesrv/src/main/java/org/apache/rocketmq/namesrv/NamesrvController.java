@@ -46,46 +46,48 @@ public class NamesrvController {
     private final NamesrvConfig namesrvConfig;
 
     private final NettyServerConfig nettyServerConfig;
-    //创建了一个线程的线程池
+    //创建了一个线程的线程池 用于定时检查broker是否存活和定期打印配置
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
             "NSScheduledThread"));
 
     private final KVConfigManager kvConfigManager;
     private final RouteInfoManager routeInfoManager;
-
+    //远程连接管理 核心处理流程
     private RemotingServer remotingServer;
 
     private BrokerHousekeepingService brokerHousekeepingService;
 
     private ExecutorService remotingExecutor;
-
+    //配置保存
     private Configuration configuration;
+
     //从NameserverStartup传递过来的配置
     public NamesrvController(NamesrvConfig namesrvConfig, NettyServerConfig nettyServerConfig) {
         this.namesrvConfig = namesrvConfig;
         this.nettyServerConfig = nettyServerConfig;
-        //对于k/v配置的管理
+        //初始化对于k/v配置的管理
         this.kvConfigManager = new KVConfigManager(this);
-        //路由管理
+        //初始化路由管理
         this.routeInfoManager = new RouteInfoManager();
+        //初始化Broker连接管理服务
         this.brokerHousekeepingService = new BrokerHousekeepingService(this);
+        //初始化配置管理
         this.configuration = new Configuration(log, this.namesrvConfig, this.nettyServerConfig);
         this.configuration.setStorePathFromConfig(this.namesrvConfig, "configStorePath");
     }
-   //开始进行初始化
+
+    //开始进行初始化
     public boolean initialize() {
-        //加载 KV 配置。从本地文件中读取配置
+        //加载 KV 配置。根据-c 指定的配置文件的路径，从本地文件中读取配置
         this.kvConfigManager.load();
         //创建 NettyServer 网络处理对象
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
-        //开启两个定时任务，在RocketMQ中此类定时任务统称为心跳检测 。
         this.remotingExecutor =
                 Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
 
         this.registerProcessor();
         //NameServer每隔1Os扫描一次Broker,移除处于不激活状态的Broker
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
             @Override
             public void run() {
                 NamesrvController.this.routeInfoManager.scanNotActiveBroker();
@@ -93,7 +95,6 @@ public class NamesrvController {
         }, 5, 10, TimeUnit.SECONDS);
         //nameserver每隔10分钟打印一次KV配置。
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
-
             @Override
             public void run() {
                 NamesrvController.this.kvConfigManager.printAllPeriodically();
@@ -103,25 +104,33 @@ public class NamesrvController {
         return true;
     }
 
+    /**
+     * 注册处理器
+     */
     private void registerProcessor() {
+        //如果是集群测试
         if (namesrvConfig.isClusterTest()) {
 
             this.remotingServer.registerDefaultProcessor(new ClusterTestRequestProcessor(this, namesrvConfig.getProductEnvName()),
                     this.remotingExecutor);
         } else {
-
+            //如果是正常
             this.remotingServer.registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
         }
     }
 
     public void start() throws Exception {
+        //开启netty服务 监听端口 处理broker发送过来的请求
         this.remotingServer.start();
     }
 
     //结束时终止的顺序
     public void shutdown() {
+        //1。关闭netty服务
         this.remotingServer.shutdown();
+        //2。关闭
         this.remotingExecutor.shutdown();
+        //3。关闭定时检测broker
         this.scheduledExecutorService.shutdown();
     }
 

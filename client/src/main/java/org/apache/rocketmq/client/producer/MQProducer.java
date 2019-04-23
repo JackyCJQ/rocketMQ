@@ -24,11 +24,15 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
+/**
+ * 除了对应的操作 broker还具有自己的操作
+ */
 public interface MQProducer extends MQAdmin {
+    //启动broker
     void start() throws MQClientException;
 
     void shutdown();
-
+     //获取生产者队列
     List<MessageQueue> fetchPublishMessageQueues(final String topic) throws MQClientException;
 
     SendResult send(final Message msg) throws MQClientException, RemotingException, MQBrokerException,
@@ -43,12 +47,13 @@ public interface MQProducer extends MQAdmin {
     void send(final Message msg, final SendCallback sendCallback, final long timeout)
         throws MQClientException, RemotingException, InterruptedException;
 
+    //直接发送不管发送的结果
     void sendOneway(final Message msg) throws MQClientException, RemotingException,
         InterruptedException;
-
+    //发送到指定的消息对列
     SendResult send(final Message msg, final MessageQueue mq) throws MQClientException,
         RemotingException, MQBrokerException, InterruptedException;
-
+    //增加一个超时
     SendResult send(final Message msg, final MessageQueue mq, final long timeout)
         throws MQClientException, RemotingException, MQBrokerException, InterruptedException;
 
@@ -60,7 +65,7 @@ public interface MQProducer extends MQAdmin {
 
     void sendOneway(final Message msg, final MessageQueue mq) throws MQClientException,
         RemotingException, InterruptedException;
-
+    //发送到指定队列
     SendResult send(final Message msg, final MessageQueueSelector selector, final Object arg)
         throws MQClientException, RemotingException, MQBrokerException, InterruptedException;
 
@@ -78,7 +83,7 @@ public interface MQProducer extends MQAdmin {
 
     void sendOneway(final Message msg, final MessageQueueSelector selector, final Object arg)
         throws MQClientException, RemotingException, InterruptedException;
-
+    //在事务中发送消息
     TransactionSendResult sendMessageInTransaction(final Message msg,
         final LocalTransactionExecuter tranExecuter, final Object arg) throws MQClientException;
 }

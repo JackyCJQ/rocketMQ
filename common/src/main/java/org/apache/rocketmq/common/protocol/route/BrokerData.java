@@ -30,21 +30,21 @@ import java.util.Map;
  */
 public class BrokerData implements Comparable<BrokerData> {
     /**
-     * 集群名
+     * 所属集群名
      */
     private String cluster;
     /**
-     * Broker名
+     * Broker名字
      */
     private String brokerName;
     /**
-     * broker角色编号 和 broker地址 Map
+     * broker角色编号 和 broker地址
      */
     private HashMap<Long/* brokerId */, String/* broker address */> brokerAddrs;
 
     /**
      * 获取 Broker地址
-     * 优先级： Master > {@link #brokerAddrs}第一个
+     * 优先级：Master节点的地址，如果获取不到master则按序号获取
      *
      * @return Broker地址
      */
@@ -120,6 +120,7 @@ public class BrokerData implements Comparable<BrokerData> {
         return brokerName;
     }
 
+    //设置broker的名字
     public void setBrokerName(String brokerName) {
         this.brokerName = brokerName;
     }

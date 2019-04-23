@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Broker连接管理服务
+ * Broker连接管理服务,netty服务的处理回掉方法
  */
 public class BrokerHousekeepingService implements ChannelEventListener {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
