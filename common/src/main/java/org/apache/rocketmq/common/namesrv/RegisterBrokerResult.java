@@ -31,7 +31,9 @@ public class RegisterBrokerResult {
      * master服务器地址
      */
     private String masterAddr;
-
+    /**
+     * 注册之后会获取到对应的配置
+     */
     private KVTable kvTable;
 
     public String getHaServerAddr() {

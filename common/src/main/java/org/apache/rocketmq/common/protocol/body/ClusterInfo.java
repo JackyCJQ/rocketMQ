@@ -34,22 +34,18 @@ public class ClusterInfo extends RemotingSerializable {
     //对应的所有的集群的信息
     private HashMap<String/* clusterName */, Set<String/* brokerName */>> clusterAddrTable;
 
-    //获取所有的broker信息
     public HashMap<String, BrokerData> getBrokerAddrTable() {
         return brokerAddrTable;
     }
 
-    //设置所有的broker信息
     public void setBrokerAddrTable(HashMap<String, BrokerData> brokerAddrTable) {
         this.brokerAddrTable = brokerAddrTable;
     }
 
-    //获取所有的集群信息
     public HashMap<String, Set<String>> getClusterAddrTable() {
         return clusterAddrTable;
     }
 
-    //设置所有的集群信息
     public void setClusterAddrTable(HashMap<String, Set<String>> clusterAddrTable) {
         this.clusterAddrTable = clusterAddrTable;
     }
