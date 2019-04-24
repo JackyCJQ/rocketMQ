@@ -40,6 +40,7 @@ public class Configuration {
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     /**
      * All properties include configs in object and extend properties.
+     * 所有的配置都保存在了这里
      */
     private Properties allConfigs = new Properties();
 

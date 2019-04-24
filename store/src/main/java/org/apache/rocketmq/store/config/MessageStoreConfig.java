@@ -22,16 +22,12 @@ import org.apache.rocketmq.store.ConsumeQueue;
 import java.io.File;
 
 public class MessageStoreConfig {
-    //The root directory in which the log data is kept
     @ImportantField
     private String storePathRootDir = System.getProperty("user.home") + File.separator + "store";
-
     /**
-     * The directory in which the commit_log is kept
      * commitlog 目录
      */
     @ImportantField
-    @SuppressWarnings("SpellCheckingInspection")
     private String storePathCommitLog = System.getProperty("user.home") + File.separator + "store"
         + File.separator + "commitlog";
 
@@ -45,7 +41,6 @@ public class MessageStoreConfig {
      * ConsumeQueue file size,default is 30W
      * 每个消费队列文件大小，每个文件30W消息
      */
-    @SuppressWarnings("SpellCheckingInspection")
     private int mapedFileSizeConsumeQueue = 300000 * ConsumeQueue.CQ_STORE_UNIT_SIZE;
 
     /**
@@ -64,7 +59,6 @@ public class MessageStoreConfig {
     @ImportantField
     private int commitIntervalCommitLog = 200;
 
-    @SuppressWarnings("SpellCheckingInspection")
     private boolean useReentrantLockWhenPutMessage = false;
 
     /**

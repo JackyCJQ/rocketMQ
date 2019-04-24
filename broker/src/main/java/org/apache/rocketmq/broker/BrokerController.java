@@ -63,12 +63,15 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class BrokerController {
+    //三个日志
     private static final Logger log = LoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private static final Logger LOG_PROTECTION = LoggerFactory.getLogger(LoggerName.PROTECTION_LOGGER_NAME);
     private static final Logger LOG_WATER_MARK = LoggerFactory.getLogger(LoggerName.WATER_MARK_LOGGER_NAME);
+    //三个核心配置
     private final BrokerConfig brokerConfig;
     private final NettyServerConfig nettyServerConfig;
     private final NettyClientConfig nettyClientConfig;
+    //消息持久化配置
     private final MessageStoreConfig messageStoreConfig;
     private final ConsumerOffsetManager consumerOffsetManager;
     private final ConsumerManager consumerManager;

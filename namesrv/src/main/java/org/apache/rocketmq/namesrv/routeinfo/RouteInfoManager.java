@@ -49,7 +49,7 @@ public class RouteInfoManager {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.NAMESRV_LOGGER_NAME);
     //过期时间默认为2分钟
     private final static long BROKER_CHANNEL_EXPIRED_TIME = 1000 * 60 * 2;
-    //读写锁
+
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     /**
      * 一个 topic 可以对应 多个Broker

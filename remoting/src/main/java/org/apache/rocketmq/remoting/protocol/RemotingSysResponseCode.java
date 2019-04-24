@@ -30,10 +30,17 @@ public class RemotingSysResponseCode {
      * 系统异常
      */
     public static final int SYSTEM_ERROR = 1;
+    /**
+     * 系统忙碌
+     */
 
     public static final int SYSTEM_BUSY = 2;
-
+    /**
+     * 请求码不支持
+     */
     public static final int REQUEST_CODE_NOT_SUPPORTED = 3;
-
+    /**
+     * 事务失败
+     */
     public static final int TRANSACTION_FAILED = 4;
 }

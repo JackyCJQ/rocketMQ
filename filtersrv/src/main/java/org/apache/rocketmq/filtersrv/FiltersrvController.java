@@ -38,18 +38,21 @@ import java.util.concurrent.TimeUnit;
 
 public class FiltersrvController {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.FILTERSRV_LOGGER_NAME);
-
+    //filter配置
     private final FiltersrvConfig filtersrvConfig;
-
+    //netty配置
     private final NettyServerConfig nettyServerConfig;
+    //对于实现的过滤器类的管理
     private final FilterClassManager filterClassManager;
-
+    //对外访问暴露的API吗
     private final FilterServerOuterAPI filterServerOuterAPI = new FilterServerOuterAPI();
+    //创建一个默认的消费者吗？
     private final DefaultMQPullConsumer defaultMQPullConsumer = new DefaultMQPullConsumer(
-        MixAll.FILTERSRV_CONSUMER_GROUP);
-
+            MixAll.FILTERSRV_CONSUMER_GROUP);
+    //创建一个单线程的线程池
     private final ScheduledExecutorService scheduledExecutorService = Executors
-        .newSingleThreadScheduledExecutor(new ThreadFactoryImpl("FSScheduledThread"));
+            .newSingleThreadScheduledExecutor(new ThreadFactoryImpl("FSScheduledThread"));
+
     private final FilterServerStatsManager filterServerStatsManager = new FilterServerStatsManager();
 
     private RemotingServer remotingServer;
@@ -64,14 +67,14 @@ public class FiltersrvController {
     }
 
     public boolean initialize() {
-
+         //打印对应的配置
         MixAll.printObjectProperties(log, this.filtersrvConfig);
 
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig);
 
         this.remotingExecutor =
-            Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(),
-                new ThreadFactoryImpl("RemotingExecutorThread_"));
+                Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(),
+                        new ThreadFactoryImpl("RemotingExecutorThread_"));
 
         this.registerProcessor();
 
@@ -82,12 +85,14 @@ public class FiltersrvController {
             public void run() {
                 FiltersrvController.this.registerFilterServerToBroker();
             }
-        }, 15, 10, TimeUnit.SECONDS); // TODO edit by 芋艿：initialDelay时间太短，可能导致初始化失败。从3=》15
+        }, 15, 10, TimeUnit.SECONDS);
 
+        //初始化消费者的一些配置信息
         this.defaultMQPullConsumer.setBrokerSuspendMaxTimeMillis(this.defaultMQPullConsumer
-            .getBrokerSuspendMaxTimeMillis() - 1000);
+                .getBrokerSuspendMaxTimeMillis() - 1000);
+
         this.defaultMQPullConsumer.setConsumerTimeoutMillisWhenSuspend(this.defaultMQPullConsumer
-            .getConsumerTimeoutMillisWhenSuspend() - 1000);
+                .getConsumerTimeoutMillisWhenSuspend() - 1000);
 
         this.defaultMQPullConsumer.setNamesrvAddr(this.filtersrvConfig.getNamesrvAddr());
         this.defaultMQPullConsumer.setInstanceName(String.valueOf(UtilAll.getPid()));
@@ -95,9 +100,12 @@ public class FiltersrvController {
         return true;
     }
 
+    /**
+     * 定义自己默认的链接处理器
+     */
     private void registerProcessor() {
         this.remotingServer
-            .registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
+                .registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
     }
 
     /**
@@ -107,20 +115,20 @@ public class FiltersrvController {
     public void registerFilterServerToBroker() {
         try {
             RegisterFilterServerResponseHeader responseHeader =
-                this.filterServerOuterAPI.registerFilterServerToBroker(
-                    this.filtersrvConfig.getConnectWhichBroker(), this.localAddr());
+                    this.filterServerOuterAPI.registerFilterServerToBroker(
+                            this.filtersrvConfig.getConnectWhichBroker(), this.localAddr());
             this.defaultMQPullConsumer.getDefaultMQPullConsumerImpl().getPullAPIWrapper()
-                .setDefaultBrokerId(responseHeader.getBrokerId());
+                    .setDefaultBrokerId(responseHeader.getBrokerId());
 
             if (null == this.brokerName) {
                 this.brokerName = responseHeader.getBrokerName();
             }
 
             log.info("register filter server<{}> to broker<{}> OK, Return: {} {}",
-                this.localAddr(),
-                this.filtersrvConfig.getConnectWhichBroker(),
-                responseHeader.getBrokerName(),
-                responseHeader.getBrokerId());
+                    this.localAddr(),
+                    this.filtersrvConfig.getConnectWhichBroker(),
+                    responseHeader.getBrokerName(),
+                    responseHeader.getBrokerId());
         } catch (Exception e) {
             log.warn("register filter server Exception", e);
 
@@ -131,7 +139,7 @@ public class FiltersrvController {
 
     public String localAddr() {
         return String.format("%s:%d", this.filtersrvConfig.getFilterServerIP(),
-            this.remotingServer.localListenPort());
+                this.remotingServer.localListenPort());
     }
 
     public void start() throws Exception {
@@ -139,7 +147,7 @@ public class FiltersrvController {
         this.remotingServer.start();
         this.filterServerOuterAPI.start();
         this.defaultMQPullConsumer.getDefaultMQPullConsumerImpl().getPullAPIWrapper()
-            .setConnectBrokerByUser(true);
+                .setConnectBrokerByUser(true);
         this.filterClassManager.start();
         this.filterServerStatsManager.start();
     }

@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RemotingUtil {
+    //获取系统的版本
     public static final String OS_NAME = System.getProperty("os.name");
 
     private static final Logger log = LoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
@@ -62,9 +63,11 @@ public class RemotingUtil {
 
         if (isLinuxPlatform()) {
             try {
+                //如果是linux系统 通过epoll
                 final Class<?> providerClazz = Class.forName("sun.nio.ch.EPollSelectorProvider");
                 if (providerClazz != null) {
                     try {
+                        //通过反射来获取epoll
                         final Method method = providerClazz.getMethod("provider");
                         if (method != null) {
                             final SelectorProvider selectorProvider = (SelectorProvider) method.invoke(null);
@@ -80,7 +83,7 @@ public class RemotingUtil {
                 // ignore
             }
         }
-
+        //如果普通的 就使用默认的Java nio中的选择器
         if (result == null) {
             result = Selector.open();
         }
@@ -95,15 +98,20 @@ public class RemotingUtil {
     public static String getLocalAddress() {
         try {
             // Traversal Network interface to get the first non-loopback and non-private address
+            //获取网卡接口
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
             ArrayList<String> ipv4Result = new ArrayList<String>();
             ArrayList<String> ipv6Result = new ArrayList<String>();
             while (enumeration.hasMoreElements()) {
+                //网卡接口
                 final NetworkInterface networkInterface = enumeration.nextElement();
+                //一个网卡接口可能会有
                 final Enumeration<InetAddress> en = networkInterface.getInetAddresses();
                 while (en.hasMoreElements()) {
                     final InetAddress address = en.nextElement();
+                    //不是本地环回地址
                     if (!address.isLoopbackAddress()) {
+                        //在判断类型
                         if (address instanceof Inet6Address) {
                             ipv6Result.add(normalizeHostAddress(address));
                         } else {
@@ -116,6 +124,7 @@ public class RemotingUtil {
             // prefer ipv4
             if (!ipv4Result.isEmpty()) {
                 for (String ip : ipv4Result) {
+                    //去掉内网地址
                     if (ip.startsWith("127.0") || ip.startsWith("192.168")) {
                         continue;
                     }
@@ -169,12 +178,14 @@ public class RemotingUtil {
     public static SocketChannel connect(SocketAddress remote, final int timeoutMillis) {
         SocketChannel sc = null;
         try {
+            //打开一个链接
             sc = SocketChannel.open();
             sc.configureBlocking(true);
             sc.socket().setSoLinger(false, -1);
             sc.socket().setTcpNoDelay(true);
             sc.socket().setReceiveBufferSize(1024 * 64);
             sc.socket().setSendBufferSize(1024 * 64);
+            //实际去链接
             sc.socket().connect(remote, timeoutMillis);
             sc.configureBlocking(false);
             return sc;

@@ -25,9 +25,9 @@ import org.apache.rocketmq.common.filter.MessageFilter;
 public class FilterClassInfo {
     //配置的过滤类的名字
     private String className;
-    //传输的时间进行完整性校验用的
+    //进行完整性校验用的
     private int classCRC;
-    //匹配的消息
+    //过滤的规则
     private MessageFilter messageFilter;
 
     public int getClassCRC() {

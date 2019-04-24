@@ -49,14 +49,15 @@ public class NamesrvController {
     //创建了一个线程的线程池 用于定时检查broker是否存活和定期打印配置
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
             "NSScheduledThread"));
-
+    //对于kv配置的管理
     private final KVConfigManager kvConfigManager;
+    //对于路由信息的管理
     private final RouteInfoManager routeInfoManager;
     //远程连接管理 核心处理流程
     private RemotingServer remotingServer;
-
+    //
     private BrokerHousekeepingService brokerHousekeepingService;
-
+    //处理远程链接
     private ExecutorService remotingExecutor;
     //配置保存
     private Configuration configuration;
@@ -84,7 +85,7 @@ public class NamesrvController {
         this.remotingServer = new NettyRemotingServer(this.nettyServerConfig, this.brokerHousekeepingService);
         this.remotingExecutor =
                 Executors.newFixedThreadPool(nettyServerConfig.getServerWorkerThreads(), new ThreadFactoryImpl("RemotingExecutorThread_"));
-
+        //注册处理器
         this.registerProcessor();
         //NameServer每隔1Os扫描一次Broker,移除处于不激活状态的Broker
         this.scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -119,6 +120,10 @@ public class NamesrvController {
         }
     }
 
+    /**
+     * 启动监听 处理来自broker的链接
+     * @throws Exception
+     */
     public void start() throws Exception {
         //开启netty服务 监听端口 处理broker发送过来的请求
         this.remotingServer.start();
