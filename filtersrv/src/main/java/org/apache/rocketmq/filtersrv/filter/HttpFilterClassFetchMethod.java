@@ -39,6 +39,7 @@ public class HttpFilterClassFetchMethod implements FilterClassFetchMethod {
         String thisUrl = String.format("%s/%s.java", this.url, className);
 
         try {
+            //发送一个http请求
             HttpResult result = HttpTinyClient.httpGet(thisUrl, null, null, "UTF-8", 5000);
             if (200 == result.code) {
                 return result.content;

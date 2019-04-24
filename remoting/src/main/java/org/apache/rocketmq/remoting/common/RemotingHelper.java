@@ -28,14 +28,21 @@ import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
 public class RemotingHelper {
+
     public static final String ROCKETMQ_REMOTING = "RocketmqRemoting";
     public static final String DEFAULT_CHARSET = "UTF-8";
 
+    /**
+     * 打印错误的信息，同时打印栈的调用信息
+     * @param e
+     * @return
+     */
     public static String exceptionSimpleDesc(final Throwable e) {
         StringBuffer sb = new StringBuffer();
         if (e != null) {
+            //这个信息是指 异常中指定的信息
             sb.append(e.toString());
-
+             //在打印斩的信息吗
             StackTraceElement[] stackTrace = e.getStackTrace();
             if (stackTrace != null && stackTrace.length > 0) {
                 StackTraceElement elment = stackTrace[0];
@@ -43,18 +50,35 @@ public class RemotingHelper {
                 sb.append(elment.toString());
             }
         }
-
         return sb.toString();
     }
 
+    /**
+     * 转化字符串信息到address格式信息
+     * @param addr
+     * @return
+     */
     public static SocketAddress string2SocketAddress(final String addr) {
+
         String[] s = addr.split(":");
+        //hostname+port
         InetSocketAddress isa = new InetSocketAddress(s[0], Integer.parseInt(s[1]));
         return isa;
     }
 
-    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request,
-        final long timeoutMillis) throws InterruptedException, RemotingConnectException,
+    /**
+     * 同步调用
+     * @param addr
+     * @param request
+     * @param timeoutMillis
+     * @return
+     * @throws InterruptedException
+     * @throws RemotingConnectException
+     * @throws RemotingSendRequestException
+     * @throws RemotingTimeoutException
+     */
+    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request,final long timeoutMillis)
+            throws InterruptedException, RemotingConnectException,
         RemotingSendRequestException, RemotingTimeoutException {
         long beginTime = System.currentTimeMillis();
         SocketAddress socketAddress = RemotingUtil.string2SocketAddress(addr);
@@ -63,7 +87,7 @@ public class RemotingHelper {
             boolean sendRequestOK = false;
 
             try {
-
+                //设置为阻塞的方式
                 socketChannel.configureBlocking(true);
 
                 //bugfix  http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4614802
@@ -72,6 +96,7 @@ public class RemotingHelper {
                 ByteBuffer byteBufferRequest = request.encode();
                 while (byteBufferRequest.hasRemaining()) {
                     int length = socketChannel.write(byteBufferRequest);
+                    //超时
                     if (length > 0) {
                         if (byteBufferRequest.hasRemaining()) {
                             if ((System.currentTimeMillis() - beginTime) > timeoutMillis) {
@@ -145,6 +170,11 @@ public class RemotingHelper {
         }
     }
 
+    /**
+     * 获取channel的远程链接地址
+     * @param channel
+     * @return
+     */
     public static String parseChannelRemoteAddr(final Channel channel) {
         if (null == channel) {
             return "";
@@ -164,6 +194,11 @@ public class RemotingHelper {
         return "";
     }
 
+    /**
+     * 解析远程主机的名字
+     * @param channel
+     * @return
+     */
     public static String parseChannelRemoteName(final Channel channel) {
         if (null == channel) {
             return "";
@@ -175,6 +210,11 @@ public class RemotingHelper {
         return "";
     }
 
+    /**
+     * 解析远程socket的地址
+     * @param socketAddress
+     * @return
+     */
     public static String parseSocketAddressAddr(SocketAddress socketAddress) {
         if (socketAddress != null) {
             final String addr = socketAddress.toString();
@@ -186,6 +226,11 @@ public class RemotingHelper {
         return "";
     }
 
+    /**
+     * 解析远程socket的名字
+     * @param socketAddress
+     * @return
+     */
     public static String parseSocketAddressName(SocketAddress socketAddress) {
 
         final InetSocketAddress addrs = (InetSocketAddress) socketAddress;

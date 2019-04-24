@@ -17,8 +17,12 @@
 
 package org.apache.rocketmq.filtersrv.filter;
 
+/**
+ * 继承classLoader写自己的加载逻辑
+ */
 public class FilterClassLoader extends ClassLoader {
     public final Class<?> createNewClass(String name, byte[] b, int off, int len) throws ClassFormatError {
+       //收到加载class信息，
         return this.defineClass(name, b, off, len);
     }
 }

@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.common.utils;
 
+import org.apache.rocketmq.common.MQVersion;
+import org.apache.rocketmq.common.MixAll;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -24,22 +27,24 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.rocketmq.common.MQVersion;
-import org.apache.rocketmq.common.MixAll;
 
+/**
+ * 通过原生的java提供的http链接来做的
+ */
 public class HttpTinyClient {
 
-    static public HttpResult httpGet(String url, List<String> headers, List<String> paramValues,
-        String encoding, long readTimeoutMs) throws IOException {
+    static public HttpResult httpGet(String url, List<String> headers, List<String> paramValues, String encoding, long readTimeoutMs) throws IOException {
+        //如果存在参数，将参数写在url上
         String encodedContent = encodingParams(paramValues, encoding);
         url += (null == encodedContent) ? "" : ("?" + encodedContent);
-
+        //通过原声的http链接。来做的
         HttpURLConnection conn = null;
-        try {
+        try {//获取一个URL链接
             conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod("GET");
             conn.setConnectTimeout((int) readTimeoutMs);
             conn.setReadTimeout((int) readTimeoutMs);
+            //添加一些请求头信息
             setHeaders(conn, headers, encoding);
 
             conn.connect();
@@ -47,6 +52,7 @@ public class HttpTinyClient {
             String resp = null;
 
             if (HttpURLConnection.HTTP_OK == respCode) {
+                //把流转化为了字符串
                 resp = IOTinyUtils.toString(conn.getInputStream(), encoding);
             } else {
                 resp = IOTinyUtils.toString(conn.getErrorStream(), encoding);
@@ -60,12 +66,11 @@ public class HttpTinyClient {
     }
 
     static private String encodingParams(List<String> paramValues, String encoding)
-        throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException {
         StringBuilder sb = new StringBuilder();
         if (null == paramValues) {
             return null;
         }
-
         for (Iterator<String> iter = paramValues.iterator(); iter.hasNext(); ) {
             sb.append(iter.next()).append("=");
             sb.append(URLEncoder.encode(iter.next(), encoding));
@@ -99,7 +104,7 @@ public class HttpTinyClient {
      * @throws java.io.IOException
      */
     static public HttpResult httpPost(String url, List<String> headers, List<String> paramValues,
-        String encoding, long readTimeoutMs) throws IOException {
+                                      String encoding, long readTimeoutMs) throws IOException {
         String encodedContent = encodingParams(paramValues, encoding);
 
         HttpURLConnection conn = null;
@@ -130,6 +135,9 @@ public class HttpTinyClient {
         }
     }
 
+    /**
+     * 封装了一下请求码和内容信息
+     */
     static public class HttpResult {
         final public int code;
         final public String content;

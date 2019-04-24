@@ -28,9 +28,13 @@ import org.apache.rocketmq.store.config.StorePathConfigHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 与slave进行同步
+ */
 public class SlaveSynchronize {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
     private final BrokerController brokerController;
+    //master的地址 volatile修饰 动态可变的
     private volatile String masterAddr = null;
 
     public SlaveSynchronize(BrokerController brokerController) {
@@ -52,6 +56,9 @@ public class SlaveSynchronize {
         this.syncSubscriptionGroupConfig();
     }
 
+    /**
+     * 同步topic配置
+     */
     private void syncTopicConfig() {
         String masterAddrBak = this.masterAddr;
         if (masterAddrBak != null) {
@@ -76,6 +83,9 @@ public class SlaveSynchronize {
         }
     }
 
+    /**
+     * 同步用户读取消息的偏移量
+     */
     private void syncConsumerOffset() {
         String masterAddrBak = this.masterAddr;
         if (masterAddrBak != null) {
@@ -92,6 +102,9 @@ public class SlaveSynchronize {
         }
     }
 
+    /**
+     * 同步延迟偏移量
+     */
     private void syncDelayOffset() {
         String masterAddrBak = this.masterAddr;
         if (masterAddrBak != null) {
@@ -116,6 +129,9 @@ public class SlaveSynchronize {
         }
     }
 
+    /**
+     * 同步订阅组的配置
+     */
     private void syncSubscriptionGroupConfig() {
         String masterAddrBak = this.masterAddr;
         if (masterAddrBak != null) {

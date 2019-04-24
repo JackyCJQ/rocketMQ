@@ -21,11 +21,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Base class for background thread
+ * 服务类线程
  */
 public abstract class ServiceThread implements Runnable {
     private static final Logger STLOG = LoggerFactory.getLogger(RemotingHelper.ROCKETMQ_REMOTING);
     private static final long JOIN_TIME = 90 * 1000;
     protected final Thread thread;
+    //修改当前线程状态
     protected volatile boolean hasNotified = false;
     protected volatile boolean stopped = false;
 

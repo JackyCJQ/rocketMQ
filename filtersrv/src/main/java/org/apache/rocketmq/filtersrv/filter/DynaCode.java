@@ -40,19 +40,20 @@ import java.util.*;
 public class DynaCode {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggerName.FILTERSRV_LOGGER_NAME);
 
+    //文件分隔符
     private static final String FILE_SP = System.getProperty("file.separator");
-
+    //行分隔符
     private static final String LINE_SP = System.getProperty("line.separator");
-
-    private String sourcePath = System.getProperty("user.home") + FILE_SP + "rocketmq_filter_class" + FILE_SP
-            + UtilAll.getPid();
+   //编译后的class文件存放地址 pid为进程号
+    private String sourcePath = System.getProperty("user.home") + FILE_SP + "rocketmq_filter_class" + FILE_SP + UtilAll.getPid();
 
     private String outPutClassPath = sourcePath;
-
+    //父加载器，就是当前现成加载器
     private ClassLoader parentClassLoader;
 
     private List<String> codeStrs;
 
+    //对加载的class做了一个缓存
     private Map<String/* fullClassName */, Class<?>/* class */> loadClass;
 
     private String classpath;
@@ -75,6 +76,7 @@ public class DynaCode {
     }
 
     public DynaCode(String classpath, ClassLoader parentClassLoader, List<String> codeStrs) {
+        //获取classPath
         this.classpath = classpath;
         this.parentClassLoader = parentClassLoader;
         this.codeStrs = codeStrs;
@@ -88,6 +90,7 @@ public class DynaCode {
     private static String extractClasspath(ClassLoader cl) {
         StringBuffer buf = new StringBuffer();
         while (cl != null) {
+            //类加载器继承了URLClassLoader
             if (cl instanceof URLClassLoader) {
                 URL urls[] = ((URLClassLoader) cl).getURLs();
                 for (int i = 0; i < urls.length; i++) {
@@ -111,6 +114,7 @@ public class DynaCode {
 
     public static Class<?> compileAndLoadClass(final String className, final String javaSource)
             throws Exception {
+        //截取类名
         String classSimpleName = FilterAPI.simpleClassName(className);
         String javaCode = javaSource;
 

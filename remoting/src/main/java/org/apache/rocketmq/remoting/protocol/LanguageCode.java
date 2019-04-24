@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.remoting.protocol;
 
+/**
+ * 对应的编程语言
+ */
 public enum LanguageCode {
     JAVA((byte) 0),
     CPP((byte) 1),
