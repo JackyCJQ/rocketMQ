@@ -73,10 +73,15 @@ public class BrokerController {
     private final NettyClientConfig nettyClientConfig;
     //消息持久化配置
     private final MessageStoreConfig messageStoreConfig;
+    //消费者消费信息便宜量管理
     private final ConsumerOffsetManager consumerOffsetManager;
+    //消费者管理
     private final ConsumerManager consumerManager;
+    //生产者管理
     private final ProducerManager producerManager;
+    //客户端了解管理
     private final ClientHousekeepingService clientHousekeepingService;
+    //拉取消息管理处理
     private final PullMessageProcessor pullMessageProcessor;
     /**
      * 拉取消息挂起维护线程服务
@@ -86,33 +91,54 @@ public class BrokerController {
      * 新消息到达监听器
      */
     private final MessageArrivingListener messageArrivingListener;
+    /**
+     * broker到客户端
+     */
     private final Broker2Client broker2Client;
+    //订阅组管理
     private final SubscriptionGroupManager subscriptionGroupManager;
+    //消费者ID改变监听
     private final ConsumerIdsChangeListener consumerIdsChangeListener;
-    // todo 待读
+
+    //负载均衡管理
     private final RebalanceLockManager rebalanceLockManager = new RebalanceLockManager();
+    //broker外部暴露pai
     private final BrokerOuterAPI brokerOuterAPI;
+    //定时任务
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryImpl(
             "BrokerControllerScheduledThread"));
+    //从节点同步管理
     private final SlaveSynchronize slaveSynchronize;
+    //
     private final BlockingQueue<Runnable> sendThreadPoolQueue;
     private final BlockingQueue<Runnable> pullThreadPoolQueue;
     private final BlockingQueue<Runnable> clientManagerThreadPoolQueue;
     private final BlockingQueue<Runnable> consumerManagerThreadPoolQueue;
+
+    //过滤器管理
     private final FilterServerManager filterServerManager;
+    //broker启动管理
     private final BrokerStatsManager brokerStatsManager;
+    //发送消息的钩子
     private final List<SendMessageHook> sendMessageHookList = new ArrayList<SendMessageHook>();
+    //消费消息的钩子
     private final List<ConsumeMessageHook> consumeMessageHookList = new ArrayList<ConsumeMessageHook>();
+    //消息存储管理
     private MessageStore messageStore;
+    //远程服务管理
     private RemotingServer remotingServer;
     private RemotingServer fastRemotingServer;
+    //topic配置管理
     private TopicConfigManager topicConfigManager;
+    //又定义了这么多线程池
     private ExecutorService sendMessageExecutor;
     private ExecutorService pullMessageExecutor;
     private ExecutorService adminBrokerExecutor;
     private ExecutorService clientManageExecutor;
     private ExecutorService consumerManageExecutor;
+    //是否定期更新master地址
     private boolean updateMasterHAServerAddrPeriodically = false;
+    //broker状态
     private BrokerStats brokerStats;
     private InetSocketAddress storeHost;
     private BrokerFastFailure brokerFastFailure;

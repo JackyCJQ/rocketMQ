@@ -21,10 +21,15 @@ import org.apache.rocketmq.store.DefaultMessageStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * broker状态管理
+ */
 public class BrokerStats {
     private static final Logger log = LoggerFactory.getLogger(LoggerName.BROKER_LOGGER_NAME);
+    //默认的消息存储管理
     private final DefaultMessageStore defaultMessageStore;
 
+    //数据统计
     private volatile long msgPutTotalYesterdayMorning;
 
     private volatile long msgPutTotalTodayMorning;
@@ -38,16 +43,16 @@ public class BrokerStats {
     }
 
     /**
-
+     *
      */
     public void record() {
         this.msgPutTotalYesterdayMorning = this.msgPutTotalTodayMorning;
         this.msgGetTotalYesterdayMorning = this.msgGetTotalTodayMorning;
 
         this.msgPutTotalTodayMorning =
-            this.defaultMessageStore.getStoreStatsService().getPutMessageTimesTotal();
+                this.defaultMessageStore.getStoreStatsService().getPutMessageTimesTotal();
         this.msgGetTotalTodayMorning =
-            this.defaultMessageStore.getStoreStatsService().getGetMessageTransferedMsgCount().get();
+                this.defaultMessageStore.getStoreStatsService().getGetMessageTransferedMsgCount().get();
 
         log.info("yesterday put message total: {}", msgPutTotalTodayMorning - msgPutTotalYesterdayMorning);
         log.info("yesterday get message total: {}", msgGetTotalTodayMorning - msgGetTotalYesterdayMorning);
