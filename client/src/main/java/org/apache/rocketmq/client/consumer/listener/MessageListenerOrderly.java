@@ -25,7 +25,7 @@ import org.apache.rocketmq.common.message.MessageExt;
 public interface MessageListenerOrderly extends MessageListener {
     /**
      * It is not recommend to throw exception,rather than returning ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT if consumption failure
-     *
+     *如果消费失败建议返回ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT
      * @param msgs msgs.size() >= 1<br> DefaultMQPushConsumer.consumeMessageBatchMaxSize=1,you can modify here
      * @param context
      * @return The consume status

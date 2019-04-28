@@ -17,6 +17,9 @@
 
 package org.apache.rocketmq.client.common;
 
+/**
+ * 客户端链接错误码
+ */
 public class ClientErrorCode {
     //连接broker错误
     public static final int CONNECT_BROKER_EXCEPTION = 10001;
@@ -26,6 +29,6 @@ public class ClientErrorCode {
     public static final int BROKER_NOT_EXIST_EXCEPTION = 10003;
     //没有发现命名服务器
     public static final int NO_NAME_SERVER_EXCEPTION = 10004;
-    //没有找到topic
+    //没有找到对应的topic
     public static final int NOT_FOUND_TOPIC_EXCEPTION = 10005;
 }

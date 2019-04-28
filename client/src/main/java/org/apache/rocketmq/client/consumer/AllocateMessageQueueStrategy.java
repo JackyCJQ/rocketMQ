@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Strategy Algorithm for message allocating between consumers
- * 消息分配策略
+ * 消息分配策略 通俗理解应该就是负载均衡
  */
 public interface AllocateMessageQueueStrategy {
 
@@ -44,7 +44,7 @@ public interface AllocateMessageQueueStrategy {
 
     /**
      * Algorithm name
-     *
+     * 负载均衡算法的名字
      * @return The strategy name
      */
     String getName();

@@ -16,6 +16,9 @@
  */
 package org.apache.rocketmq.client.hook;
 
+/**
+ * 消费消息的一个钩子函数，可以在消息消费之前和消息消费之后进行一些操作
+ */
 public interface ConsumeMessageHook {
     String hookName();
 

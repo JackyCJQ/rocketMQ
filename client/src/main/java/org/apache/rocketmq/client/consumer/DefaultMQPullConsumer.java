@@ -16,9 +16,6 @@
  */
 package org.apache.rocketmq.client.consumer;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.rocketmq.client.ClientConfig;
 import org.apache.rocketmq.client.QueryResult;
 import org.apache.rocketmq.client.consumer.rebalance.AllocateMessageQueueAveragely;
@@ -34,11 +31,15 @@ import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.apache.rocketmq.remoting.RPCHook;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Default pulling consumer
  * 默认拉取模式的消费者
  */
 public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsumer {
+    //这个是指什么实现？
     protected final transient DefaultMQPullConsumerImpl defaultMQPullConsumerImpl;
 
     /**
@@ -62,6 +63,7 @@ public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsume
     private long consumerPullTimeoutMillis = 1000 * 10;
     /**
      * Consumption pattern,default is clustering
+     * 默认是集群模式
      */
     private MessageModel messageModel = MessageModel.CLUSTERING;
     /**
@@ -73,24 +75,32 @@ public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsume
      */
     private OffsetStore offsetStore;
     /**
-     * Topic set you want to register
+     * Topic set you want to register 消费者感兴趣的topic
      */
     private Set<String> registerTopics = new HashSet<String>();
     /**
-     * Queue allocation algorithm
+     * Queue allocation algorithm 默认的负载均衡的算法 是平均分配
      */
     private AllocateMessageQueueStrategy allocateMessageQueueStrategy = new AllocateMessageQueueAveragely();
     /**
      * Whether the unit of subscription group
      */
     private boolean unitMode = false;
-
+    /**
+     * 默认重复消费的次数为16次
+     */
     private int maxReconsumeTimes = 16;
 
     public DefaultMQPullConsumer() {
         this(MixAll.DEFAULT_CONSUMER_GROUP, null);
     }
 
+    /**
+     * 核心的构造函数
+     *
+     * @param consumerGroup 消费者所在的组
+     * @param rpcHook       rpc钩子函数，可以在请求发送之前和返回结果之后进行回掉
+     */
     public DefaultMQPullConsumer(final String consumerGroup, RPCHook rpcHook) {
         this.consumerGroup = consumerGroup;
         defaultMQPullConsumerImpl = new DefaultMQPullConsumerImpl(this, rpcHook);
@@ -109,11 +119,23 @@ public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsume
         createTopic(key, newTopic, queueNum, 0);
     }
 
+    /**
+     * @param key          accesskey
+     * @param newTopic     topic name
+     * @param queueNum     topic's queue number
+     * @param topicSysFlag topic system flag
+     */
     @Override
     public void createTopic(String key, String newTopic, int queueNum, int topicSysFlag) throws MQClientException {
         this.defaultMQPullConsumerImpl.createTopic(key, newTopic, queueNum, topicSysFlag);
     }
 
+    /**
+     * @param mq        Instance of MessageQueue
+     * @param timestamp from when in milliseconds.
+     * @return
+     * @throws MQClientException
+     */
     @Override
     public long searchOffset(MessageQueue mq, long timestamp) throws MQClientException {
         return this.defaultMQPullConsumerImpl.searchOffset(mq, timestamp);

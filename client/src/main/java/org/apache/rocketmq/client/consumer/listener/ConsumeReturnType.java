@@ -18,7 +18,7 @@
 package org.apache.rocketmq.client.consumer.listener;
 
 /**
- * 消费返回类型
+ * 消费返回类型，还在用这个吗？
  */
 public enum ConsumeReturnType {
     /**
@@ -27,9 +27,11 @@ public enum ConsumeReturnType {
     SUCCESS,
     /**
      * consume timeout ,even if success
+     * 超时
      */
     TIME_OUT,
     /**
+     * 抛出异常
      * consume throw exception
      */
     EXCEPTION,

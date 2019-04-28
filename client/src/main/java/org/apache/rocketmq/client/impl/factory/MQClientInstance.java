@@ -58,7 +58,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * MQClient对象
+ * MQClient对象，一个jvm中应该是唯一的实现 这个类和关键 很多懂呢个
  */
 public class MQClientInstance {
     private final static long LOCK_TIMEOUT_MILLIS = 3000;
@@ -66,30 +66,36 @@ public class MQClientInstance {
     private final ClientConfig clientConfig;
     private final int instanceIndex;
     private final String clientId;
+    //启动时间为当时的系统时间
     private final long bootTimestamp = System.currentTimeMillis();
     /**
      * Producer Map
+     * 根据分组
      */
     private final ConcurrentHashMap<String/* group */, MQProducerInner> producerTable = new ConcurrentHashMap<>();
     /**
      * Consumer Map
      */
     private final ConcurrentHashMap<String/* group */, MQConsumerInner> consumerTable = new ConcurrentHashMap<>();
+    //这个是指什么？
     private final ConcurrentHashMap<String/* group */, MQAdminExtInner> adminExtTable = new ConcurrentHashMap<>();
+    //netty配置
     private final NettyClientConfig nettyClientConfig;
     /**
      * MQClient API实现
      */
     private final MQClientAPIImpl mQClientAPIImpl;
+    //mqAdmin实现
     private final MQAdminImpl mQAdminImpl;
     /**
      * Topic 和 Topic路由数据 Map
      */
     private final ConcurrentHashMap<String/* Topic */, TopicRouteData> topicRouteTable = new ConcurrentHashMap<>();
+
     private final Lock lockNamesrv = new ReentrantLock();
     private final Lock lockHeartbeat = new ReentrantLock();
     /**
-     * Broker名字 和 Broker地址相关 Map
+     * Broker名字 和 Broker地址相关 Map 包括了主从
      */
     private final ConcurrentHashMap<String/* Broker Name */, HashMap<Long/* brokerId */, String/* address */>> brokerAddrTable =
             new ConcurrentHashMap<>();
@@ -107,6 +113,7 @@ public class MQClientInstance {
             return new Thread(r, "MQClientFactoryScheduledThread");
         }
     });
+
     private final ClientRemotingProcessor clientRemotingProcessor;
     /**
      * 拉取消息线程服务
@@ -115,7 +122,6 @@ public class MQClientInstance {
     /**
      * consumer负载均衡线程服务
      */
-    @SuppressWarnings("SpellCheckingInspection")
     private final RebalanceService rebalanceService;
     /**
      * client内部producer
@@ -126,15 +132,26 @@ public class MQClientInstance {
      * Consumer统计管理
      */
     private final ConsumerStatsManager consumerStatsManager;
+
     private final AtomicLong storeTimesTotal = new AtomicLong(0);
+
     private ServiceState serviceState = ServiceState.CREATE_JUST;
+
     private DatagramSocket datagramSocket;
+
     private Random random = new Random();
 
     public MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId) {
         this(clientConfig, instanceIndex, clientId, null);
     }
 
+    /**
+     * 核心构造函数
+     * @param clientConfig
+     * @param instanceIndex
+     * @param clientId
+     * @param rpcHook
+     */
     public MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId, RPCHook rpcHook) {
         this.clientConfig = clientConfig;
         this.instanceIndex = instanceIndex;

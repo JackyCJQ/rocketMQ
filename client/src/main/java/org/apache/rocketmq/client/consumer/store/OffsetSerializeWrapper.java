@@ -24,10 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Wrapper class for offset serialization
+ * 记录每个消息队列的缓存
  */
 public class OffsetSerializeWrapper extends RemotingSerializable {
-    private ConcurrentHashMap<MessageQueue, AtomicLong> offsetTable =
-            new ConcurrentHashMap<>();
+    private ConcurrentHashMap<MessageQueue, AtomicLong> offsetTable = new ConcurrentHashMap<>();
 
     public ConcurrentHashMap<MessageQueue, AtomicLong> getOffsetTable() {
         return offsetTable;

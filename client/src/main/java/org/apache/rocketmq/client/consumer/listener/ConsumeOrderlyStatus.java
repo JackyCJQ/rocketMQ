@@ -35,7 +35,7 @@ public enum ConsumeOrderlyStatus {
     @Deprecated
     COMMIT,
     /**
-     * 挂起当前
+     * 挂起当前，等待序号是该线程消费
      * Suspend current queue a moment
      */
     SUSPEND_CURRENT_QUEUE_A_MOMENT;
