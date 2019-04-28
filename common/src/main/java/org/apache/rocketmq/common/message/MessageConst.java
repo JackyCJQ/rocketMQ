@@ -18,6 +18,9 @@ package org.apache.rocketmq.common.message;
 
 import java.util.HashSet;
 
+/**
+ * 发送message时,系统默认的属性key
+ */
 public class MessageConst {
     public static final String PROPERTY_KEYS = "KEYS";
     public static final String PROPERTY_TAGS = "TAGS";

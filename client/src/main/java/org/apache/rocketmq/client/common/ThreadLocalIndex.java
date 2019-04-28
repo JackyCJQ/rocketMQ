@@ -24,7 +24,7 @@ import java.util.Random;
  */
 public class ThreadLocalIndex {
     /**
-     * 线程变量（Index）
+     * 线程变量（Index)
      */
     private final ThreadLocal<Integer> threadLocalIndex = new ThreadLocal<Integer>();
     /**
@@ -40,7 +40,7 @@ public class ThreadLocalIndex {
     public int getAndIncrement() {
         Integer index = this.threadLocalIndex.get();
         if (null == index) {
-            index = Math.abs(random.nextInt()); // TODO 疑问：为啥要随机呢？
+            index = Math.abs(random.nextInt());
             if (index < 0)
                 index = 0;
             this.threadLocalIndex.set(index);

@@ -21,20 +21,26 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 对应每一条发送的message
+ */
 public class Message implements Serializable {
     private static final long serialVersionUID = 8445773977080406428L;
 
     /**
-     * Topic
+     * 对应的 Topic
      */
     private String topic;
+    /**
+     *
+     */
     private int flag;
     /**
-     * 拓展字段
+     * 拓展字段 用于过滤
      */
     private Map<String, String> properties;
     /**
-     * 内容
+     * 该message的内容
      */
     private byte[] body;
 
@@ -45,17 +51,29 @@ public class Message implements Serializable {
         this(topic, "", "", 0, body, true);
     }
 
+    /**
+     * 核心的message构造函数
+     *
+     * @param topic          要发送的topic
+     * @param tags           标签 用于过滤
+     * @param keys           属性  用于过滤
+     * @param flag
+     * @param body           发送的消息体
+     * @param waitStoreMsgOK 是否等待存储成功在返回
+     */
     public Message(String topic, String tags, String keys, int flag, byte[] body, boolean waitStoreMsgOK) {
         this.topic = topic;
         this.flag = flag;
         this.body = body;
 
         if (tags != null && tags.length() > 0)
+            //也是通过属性放在properties key->TAGS
             this.setTags(tags);
 
         if (keys != null && keys.length() > 0)
+            //也是通过属性放在properties key->KEYS
             this.setKeys(keys);
-
+            //也是通过属性放在properties key->WAIT boolean类型
         this.setWaitStoreMsgOK(waitStoreMsgOK);
     }
 
@@ -88,7 +106,7 @@ public class Message implements Serializable {
     public void putUserProperty(final String name, final String value) {
         if (MessageConst.STRING_HASH_SET.contains(name)) {
             throw new RuntimeException(String.format(
-                "The Property<%s> is used by system, input another please", name));
+                    "The Property<%s> is used by system, input another please", name));
         }
         this.putProperty(name, value);
     }
@@ -195,6 +213,6 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         return "Message [topic=" + topic + ", flag=" + flag + ", properties=" + properties + ", body="
-            + (body != null ? body.length : 0) + "]";
+                + (body != null ? body.length : 0) + "]";
     }
 }

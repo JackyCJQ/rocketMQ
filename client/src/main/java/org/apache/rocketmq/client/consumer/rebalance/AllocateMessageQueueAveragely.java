@@ -74,6 +74,7 @@ public class AllocateMessageQueueAveragely implements AllocateMessageQueueStrate
         return result;
     }
 
+    //平均分配
     @Override
     public String getName() {
         return "AVG";

@@ -35,7 +35,7 @@ public class MQHelper {
 
     /**
      * Reset consumer topic offset according to time
-     *
+     * 重新topic的偏移量
      * @param messageModel which model
      * @param instanceName which instance
      * @param consumerGroup consumer group
@@ -58,6 +58,7 @@ public class MQHelper {
 
         Set<MessageQueue> mqs = null;
         try {
+            //获取订阅的主题的消息队列
             mqs = consumer.fetchSubscribeMessageQueues(topic);
             if (mqs != null && !mqs.isEmpty()) {
                 TreeSet<MessageQueue> mqsNew = new TreeSet<MessageQueue>(mqs);

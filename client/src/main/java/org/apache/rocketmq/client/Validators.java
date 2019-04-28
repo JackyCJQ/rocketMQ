@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 /**
  * Common Validator
+ * 校验
  */
 public class Validators {
     public static final String VALID_PATTERN_STR = "^[%|a-zA-Z0-9_-]+$";
@@ -59,11 +60,13 @@ public class Validators {
         if (UtilAll.isBlank(group)) {
             throw new MQClientException("the specified group is blank", null);
         }
+        //对于分组名字字符的验证
         if (!regularExpressionMatcher(group, PATTERN)) {
             throw new MQClientException(String.format(
                 "the specified group[%s] contains illegal characters, allowing only %s", group,
                 VALID_PATTERN_STR), null);
         }
+        //默认最大255个字符
         if (group.length() > CHARACTER_MAX_LENGTH) {
             throw new MQClientException("the specified group is longer than group max length 255.", null);
         }
@@ -104,7 +107,7 @@ public class Validators {
         if (0 == msg.getBody().length) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body length is zero");
         }
-
+        //消息体最大为4m
         if (msg.getBody().length > defaultMQProducer.getMaxMessageSize()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL,
                 "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
@@ -115,23 +118,22 @@ public class Validators {
      * Validate topic
      *
      * @param topic
-     * @throws MQClientException
      */
     public static void checkTopic(String topic) throws MQClientException {
         if (UtilAll.isBlank(topic)) {
             throw new MQClientException("The specified topic is blank", null);
         }
-
+        //对于topic的校验，只含有普通字符
         if (!regularExpressionMatcher(topic, PATTERN)) {
             throw new MQClientException(String.format(
                 "The specified topic[%s] contains illegal characters, allowing only %s", topic,
                 VALID_PATTERN_STR), null);
         }
-
+        //topic的最大长度255
         if (topic.length() > CHARACTER_MAX_LENGTH) {
             throw new MQClientException("The specified topic is longer than topic max length 255.", null);
         }
-
+        //是否和系统默认的topic冲突
         //whether the same with system reserved keyword
         if (topic.equals(MixAll.DEFAULT_TOPIC)) {
             throw new MQClientException(
