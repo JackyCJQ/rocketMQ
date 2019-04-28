@@ -23,6 +23,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
+/**
+ * 扩展message
+ */
 public class MessageExt extends Message {
     private static final long serialVersionUID = 5720810158625748049L;
 
@@ -30,12 +33,17 @@ public class MessageExt extends Message {
      * 队列编号
      */
     private int queueId;
-
+    /**
+     * 存放大小
+     */
     private int storeSize;
     /**
      * 队列offset
      */
     private long queueOffset;
+    /**
+     * 系统标志
+     */
     private int sysFlag;
     /**
      * 生成时间
@@ -53,21 +61,32 @@ public class MessageExt extends Message {
      * 存储host
      */
     private SocketAddress storeHost;
+    /**
+     * 消息ID
+     */
     private String msgId;
+    /**
+     * 偏移量
+     */
     private long commitLogOffset;
     /**
      * body crc
      */
     private int bodyCRC;
+    /**
+     * 消费次数
+     */
     private int reconsumeTimes;
-
+    /**
+     * 事务
+     */
     private long preparedTransactionOffset;
 
     public MessageExt() {
     }
 
     public MessageExt(int queueId, long bornTimestamp, SocketAddress bornHost, long storeTimestamp,
-        SocketAddress storeHost, String msgId) {
+                      SocketAddress storeHost, String msgId) {
         this.queueId = queueId;
         this.bornTimestamp = bornTimestamp;
         this.bornHost = bornHost;
@@ -238,10 +257,10 @@ public class MessageExt extends Message {
     @Override
     public String toString() {
         return "MessageExt [queueId=" + queueId + ", storeSize=" + storeSize + ", queueOffset=" + queueOffset
-            + ", sysFlag=" + sysFlag + ", bornTimestamp=" + bornTimestamp + ", bornHost=" + bornHost
-            + ", storeTimestamp=" + storeTimestamp + ", storeHost=" + storeHost + ", msgId=" + msgId
-            + ", commitLogOffset=" + commitLogOffset + ", bodyCRC=" + bodyCRC + ", reconsumeTimes="
-            + reconsumeTimes + ", preparedTransactionOffset=" + preparedTransactionOffset
-            + ", toString()=" + super.toString() + "]";
+                + ", sysFlag=" + sysFlag + ", bornTimestamp=" + bornTimestamp + ", bornHost=" + bornHost
+                + ", storeTimestamp=" + storeTimestamp + ", storeHost=" + storeHost + ", msgId=" + msgId
+                + ", commitLogOffset=" + commitLogOffset + ", bodyCRC=" + bodyCRC + ", reconsumeTimes="
+                + reconsumeTimes + ", preparedTransactionOffset=" + preparedTransactionOffset
+                + ", toString()=" + super.toString() + "]";
     }
 }

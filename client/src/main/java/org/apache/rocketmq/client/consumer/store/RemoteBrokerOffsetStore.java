@@ -41,13 +41,14 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class RemoteBrokerOffsetStore implements OffsetStore {
     private final static Logger log = ClientLogger.getLog();
+    //客户端实例
     private final MQClientInstance mQClientFactory;
     /**
      * 消费分组
      */
     private final String groupName;
     /**
-     * 消费进度
+     * 记录每个队列的消费进度
      */
     private ConcurrentHashMap<MessageQueue, AtomicLong> offsetTable = new ConcurrentHashMap<>();
 
@@ -63,15 +64,18 @@ public class RemoteBrokerOffsetStore implements OffsetStore {
     @Override
     public void updateOffset(MessageQueue mq, long offset, boolean increaseOnly) {
         if (mq != null) {
+            //获取每个队列的消费偏移
             AtomicLong offsetOld = this.offsetTable.get(mq);
             if (null == offsetOld) {
                 offsetOld = this.offsetTable.putIfAbsent(mq, new AtomicLong(offset));
             }
 
             if (null != offsetOld) {
+                //如果是仅仅增加
                 if (increaseOnly) {
                     MixAll.compareAndIncreaseOnly(offsetOld, offset);
                 } else {
+//                    如果不是则直接更新
                     offsetOld.set(offset);
                 }
             }
@@ -249,7 +253,6 @@ public class RemoteBrokerOffsetStore implements OffsetStore {
         InterruptedException, MQClientException {
         FindBrokerResult findBrokerResult = this.mQClientFactory.findBrokerAddressInAdmin(mq.getBrokerName());
         if (null == findBrokerResult) {
-            // TODO Here may be heavily overhead for Name Server,need tuning
             this.mQClientFactory.updateTopicRouteInfoFromNameServer(mq.getTopic());
             findBrokerResult = this.mQClientFactory.findBrokerAddressInAdmin(mq.getBrokerName());
         }

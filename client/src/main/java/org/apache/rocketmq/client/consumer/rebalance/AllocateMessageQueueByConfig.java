@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * 队列分配策略 - 根据配置
- * TODO 疑问：使用场景。
+ * 用户可以继承，写自己负载均衡的算法
  */
 public class AllocateMessageQueueByConfig implements AllocateMessageQueueStrategy {
     private List<MessageQueue> messageQueueList;

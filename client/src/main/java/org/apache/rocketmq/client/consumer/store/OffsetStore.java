@@ -29,8 +29,6 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 public interface OffsetStore {
     /**
      * Load
-     *
-     * @throws MQClientException
      */
     void load() throws MQClientException;
 

@@ -42,7 +42,7 @@ public class PullResult {
      */
     private final long maxOffset;
     /**
-     * 消息列表
+     * 消息列表，符合的结果集
      */
     private List<MessageExt> msgFoundList;
 

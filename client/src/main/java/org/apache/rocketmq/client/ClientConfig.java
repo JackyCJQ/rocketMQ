@@ -25,7 +25,7 @@ import org.apache.rocketmq.remoting.common.RemotingUtil;
  */
 public class ClientConfig {
     public static final String SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY = "com.rocketmq.sendMessageWithVIPChannel";
-    //获取系统配置的nameSrv的地址
+    //获取nameSrv的地址
     private String namesrvAddr = System.getProperty(MixAll.NAMESRV_ADDR_PROPERTY, System.getenv(MixAll.NAMESRV_ADDR_ENV));
     //获取本地IP
     private String clientIP = RemotingUtil.getLocalAddress();
@@ -34,19 +34,18 @@ public class ClientConfig {
     //获取cpu的数量
     private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
     /**
-     * Pulling topic information interval from the named server
      * 默认每30秒从namesrv拉取topic信息
      */
     private int pollNameServerInteval = 1000 * 30;
     /**
-     * Heartbeat interval in microseconds with message broker
-     * 默认心跳也是30s
+     * 与message broker默认心跳也是30s
      */
     private int heartbeatBrokerInterval = 1000 * 30;
     /**
      * Offset persistent interval for consumer
      */
     private int persistConsumerOffsetInterval = 1000 * 5;
+    //
     private boolean unitMode = false;
     private String unitName;//这个名字代表什么
     //默认是vip通道

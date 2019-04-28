@@ -85,7 +85,8 @@ public class RouteInfoManager {
     }
 
     /**
-     *返回集群信息
+     * 返回集群信息
+     *
      * @return
      */
     public byte[] getAllClusterInfo() {
@@ -156,22 +157,21 @@ public class RouteInfoManager {
             final TopicConfigSerializeWrapper topicConfigWrapper,
             final List<String> filterServerList,
             final Channel channel) {
+        //注册集群的结果
         RegisterBrokerResult result = new RegisterBrokerResult();
         try {
             try {
                 /**
                  * 路由注册需要加写锁 ，防止并发修改 RoutelnfoManager 中的路由表 。
-                 * Broker所属集群是否存在，如果不存在，则创建，然后将broker名加入到集群合中。
                  */
-                this.lock.writeLock().lockInterruptibly(); //
+                this.lock.writeLock().lockInterruptibly();
                 Set<String> brokerNames = this.clusterAddrTable.get(clusterName);
-                //如果不存在集群信息，则新建
                 if (null == brokerNames) {
                     brokerNames = new HashSet<String>();
                     this.clusterAddrTable.put(clusterName, brokerNames);
                 }
                 brokerNames.add(brokerName);
-                //首次注册
+                //默认不是首次注册
                 boolean registerFirst = false;
                 /**
                  * 维护 BrokerData信息，首先从 brokerAddrTable根据 BrokerName尝试获取 Broker信息，
@@ -189,12 +189,14 @@ public class RouteInfoManager {
 
                     this.brokerAddrTable.put(brokerName, brokerData);
                 }
-                //如果之前注册过
+                //如果之前注册过，会进行替换
                 String oldAddr = brokerData.getBrokerAddrs().put(brokerId, brokerAddr);
+                //在判断这个broker是否注册过
                 registerFirst = registerFirst || (null == oldAddr);
 
                 // 更新topic信息
                 if (null != topicConfigWrapper && MixAll.MASTER_ID == brokerId) {
+                    //配置有改变或者是第一次注册
                     if (this.isBrokerTopicConfigChanged(brokerAddr, topicConfigWrapper.getDataVersion()) || registerFirst) {
                         ConcurrentHashMap<String, TopicConfig> tcTable = topicConfigWrapper.getTopicConfigTable();
                         if (tcTable != null) {
@@ -867,12 +869,11 @@ class BrokerLiveInfo {
      */
     private Channel channel;
     /**
-     * ha服务器地址
+     * master服务器的地址
      */
     private String haServerAddr;
 
-    public BrokerLiveInfo(long lastUpdateTimestamp, DataVersion dataVersion, Channel channel,
-                          String haServerAddr) {
+    public BrokerLiveInfo(long lastUpdateTimestamp, DataVersion dataVersion, Channel channel, String haServerAddr) {
         this.lastUpdateTimestamp = lastUpdateTimestamp;
         this.dataVersion = dataVersion;
         this.channel = channel;
