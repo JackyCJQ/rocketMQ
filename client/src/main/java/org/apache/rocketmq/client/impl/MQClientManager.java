@@ -57,17 +57,19 @@ public class MQClientManager {
      * 获得 MQClient 对象。如果不存在，则进行创建。
      *
      * @param clientConfig client配置
-     * @param rpcHook rpcHook
+     * @param rpcHook      rpcHook
      * @return MQ Client Instance
      */
     public MQClientInstance getAndCreateMQClientInstance(final ClientConfig clientConfig, RPCHook rpcHook) {
+        //每个客户端需要有一个ID  ip@instanceName（一般为pid）@unitName
         String clientId = clientConfig.buildMQClientId();
         MQClientInstance instance = this.factoryTable.get(clientId);
         if (null == instance) {
             instance =
-                new MQClientInstance(clientConfig.cloneClientConfig(),
-                    this.factoryIndexGenerator.getAndIncrement(), clientId, rpcHook);
+                    new MQClientInstance(clientConfig.cloneClientConfig(),
+                            this.factoryIndexGenerator.getAndIncrement(), clientId, rpcHook);
             MQClientInstance prev = this.factoryTable.putIfAbsent(clientId, instance);
+           //判断之前是否已经存在相同的客户端
             if (prev != null) {
                 instance = prev;
                 log.warn("Returned Previous MQClientInstance for clientId:[{}]", clientId);

@@ -24,6 +24,9 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.apache.rocketmq.common.message.MessageType;
 
+/**
+ * 发送消息的上下文
+ */
 public class SendMessageContext {
     private String producerGroup;
     private Message message;
@@ -32,9 +35,11 @@ public class SendMessageContext {
     private String bornHost;
     private CommunicationMode communicationMode;
     private SendResult sendResult;
+    //异常
     private Exception exception;
     private Object mqTraceContext;
     private Map<String, String> props;
+    //默认的mq实现
     private DefaultMQProducerImpl producer;
     private MessageType msgType = MessageType.Normal_Msg;
 

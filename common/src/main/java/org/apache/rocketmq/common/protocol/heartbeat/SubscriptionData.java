@@ -35,7 +35,7 @@ public class SubscriptionData implements Comparable<SubscriptionData> {
     public final static String SUB_ALL = "*";
 
     /**
-     *
+     *类过滤模式
      */
     private boolean classFilterMode = false;
     /**

@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class TopicPublishInfo {
     /**
-     * 是否顺序消息
+     * 该topic中的消息是否顺序消息
      */
     private boolean orderTopic = false;
     /**
@@ -37,11 +37,12 @@ public class TopicPublishInfo {
      */
     private boolean haveTopicRouterInfo = false;
     /**
-     * 消息队列数组
+     * 该topic对应的消息队列数组
      */
     private List<MessageQueue> messageQueueList = new ArrayList<MessageQueue>();
     /**
-     * 线程变量（Index）
+     * 每选择一次消息 队列， 该值会自增 l，如果 Integer.MAX_V ALUE,
+     * 则重置为 0，用于选择消息队列。
      */
     private volatile ThreadLocalIndex sendWhichQueue = new ThreadLocalIndex();
     /**
@@ -95,6 +96,12 @@ public class TopicPublishInfo {
         this.haveTopicRouterInfo = haveTopicRouterInfo;
     }
 
+    /**
+     * 不在之前broker上的队列
+     *
+     * @param lastBrokerName
+     * @return
+     */
     public MessageQueue selectOneMessageQueue(final String lastBrokerName) {
         if (lastBrokerName == null) {
             return selectOneMessageQueue();
@@ -113,6 +120,11 @@ public class TopicPublishInfo {
         }
     }
 
+    /**
+     * 挑选一个消息队列，每次都会增加一，也就是每次挑选的队列都是轮询的
+     *
+     * @return
+     */
     public MessageQueue selectOneMessageQueue() {
         int index = this.sendWhichQueue.getAndIncrement();
         int pos = Math.abs(index) % this.messageQueueList.size();
@@ -121,6 +133,12 @@ public class TopicPublishInfo {
         return this.messageQueueList.get(pos);
     }
 
+    /**
+     * 获取该broker中写队列的数量
+     *
+     * @param brokerName
+     * @return
+     */
     public int getQueueIdByBroker(final String brokerName) {
         for (int i = 0; i < topicRouteData.getQueueDatas().size(); i++) {
             final QueueData queueData = this.topicRouteData.getQueueDatas().get(i);
@@ -135,7 +153,7 @@ public class TopicPublishInfo {
     @Override
     public String toString() {
         return "TopicPublishInfo [orderTopic=" + orderTopic + ", messageQueueList=" + messageQueueList
-            + ", sendWhichQueue=" + sendWhichQueue + ", haveTopicRouterInfo=" + haveTopicRouterInfo + "]";
+                + ", sendWhichQueue=" + sendWhichQueue + ", haveTopicRouterInfo=" + haveTopicRouterInfo + "]";
     }
 
     public TopicRouteData getTopicRouteData() {

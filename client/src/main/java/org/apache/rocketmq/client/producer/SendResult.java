@@ -32,7 +32,7 @@ public class SendResult {
      */
     private String msgId;
     /**
-     * 消息队列
+     * 发送到哪个消息队列
      */
     private MessageQueue messageQueue;
     /**
@@ -47,6 +47,9 @@ public class SendResult {
      * commitLog存储消息编号
      */
     private String offsetMsgId;
+    /**
+     * 区域ID
+     */
     private String regionId;
     private boolean traceOn = true;
 
@@ -62,7 +65,7 @@ public class SendResult {
     }
 
     public SendResult(final SendStatus sendStatus, final String msgId, final MessageQueue messageQueue, final long queueOffset, final String transactionId,
-        final String offsetMsgId, final String regionId) {
+                      final String offsetMsgId, final String regionId) {
         this.sendStatus = sendStatus;
         this.msgId = msgId;
         this.messageQueue = messageQueue;
@@ -147,6 +150,6 @@ public class SendResult {
     @Override
     public String toString() {
         return "SendResult [sendStatus=" + sendStatus + ", msgId=" + msgId + ", offsetMsgId=" + offsetMsgId + ", messageQueue=" + messageQueue
-            + ", queueOffset=" + queueOffset + "]";
+                + ", queueOffset=" + queueOffset + "]";
     }
 }

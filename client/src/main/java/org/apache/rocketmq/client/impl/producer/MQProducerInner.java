@@ -26,6 +26,10 @@ import java.util.Set;
  * MQProducer内部实现接口
  */
 public interface MQProducerInner {
+    /**
+     * 获取topic列表
+     * @return
+     */
     Set<String> getPublishTopicList();
 
     /**
@@ -38,9 +42,7 @@ public interface MQProducerInner {
 
     TransactionCheckListener checkListener();
 
-    void checkTransactionState(//
-        final String addr, //
-        final MessageExt msg, //
+    void checkTransactionState(final String addr, final MessageExt msg,
         final CheckTransactionStateRequestHeader checkRequestHeader);
 
     /**

@@ -64,6 +64,9 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 默认实现
+ */
 public class DefaultMQPushConsumerImpl implements MQConsumerInner {
     /**
      * Delay some time when exception occur
@@ -77,7 +80,9 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
      * Delay some time when suspend pull service
      */
     private static final long PULL_TIME_DELAY_MILLS_WHEN_SUSPEND = 1000;
+    //broker最多挂起15秒
     private static final long BROKER_SUSPEND_MAX_TIME_MILLIS = 1000 * 15;
+
     private static final long CONSUMER_TIMEOUT_MILLIS_WHEN_SUSPEND = 1000 * 30;
     private final Logger log = ClientLogger.getLog();
     /**
@@ -88,9 +93,13 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
      * 均衡器
      */
     private final RebalanceImpl rebalanceImpl = new RebalancePushImpl(this);
+
     private final ArrayList<FilterMessageHook> filterMessageHookList = new ArrayList<FilterMessageHook>();
+    //消费者开始的时间
     private final long consumerStartTimestamp = System.currentTimeMillis();
+
     private final ArrayList<ConsumeMessageHook> consumeMessageHookList = new ArrayList<ConsumeMessageHook>();
+
     private final RPCHook rpcHook;
     /**
      * 服务状态
@@ -116,6 +125,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
      * 消息监听器
      */
     private MessageListener messageListenerInner;
+
     private OffsetStore offsetStore;
     /**
      * 消费消息服务
@@ -130,6 +140,11 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
      */
     private long flowControlTimes2 = 0;
 
+    /**
+     * 核心构造函数
+     * @param defaultMQPushConsumer
+     * @param rpcHook
+     */
     public DefaultMQPushConsumerImpl(DefaultMQPushConsumer defaultMQPushConsumer, RPCHook rpcHook) {
         this.defaultMQPushConsumer = defaultMQPushConsumer;
         this.rpcHook = rpcHook;
@@ -149,6 +164,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
         log.info("register consumeMessageHook Hook, {}", hook.hookName());
     }
 
+    //在消费消费之前可以进行相关的操作
     public void executeHookBefore(final ConsumeMessageContext context) {
         if (!this.consumeMessageHookList.isEmpty()) {
             for (ConsumeMessageHook hook : this.consumeMessageHookList) {
@@ -159,7 +175,7 @@ public class DefaultMQPushConsumerImpl implements MQConsumerInner {
             }
         }
     }
-
+  //在消息消费之后进行相关的操作
     public void executeHookAfter(final ConsumeMessageContext context) {
         if (!this.consumeMessageHookList.isEmpty()) {
             for (ConsumeMessageHook hook : this.consumeMessageHookList) {

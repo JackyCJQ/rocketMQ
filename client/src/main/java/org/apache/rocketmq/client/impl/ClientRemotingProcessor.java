@@ -47,6 +47,7 @@ import java.util.Map;
  */
 public class ClientRemotingProcessor implements NettyRequestProcessor {
     private final Logger log = ClientLogger.getLog();
+    //对应的客户端实例
     private final MQClientInstance mqClientFactory;
 
     public ClientRemotingProcessor(final MQClientInstance mqClientFactory) {
@@ -94,15 +95,17 @@ public class ClientRemotingProcessor implements NettyRequestProcessor {
      * @throws RemotingCommandException 当解析请求失败时
      */
     public RemotingCommand checkTransactionState(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
-       //解析请求头
+        //解析请求头
         final CheckTransactionStateRequestHeader requestHeader =
                 (CheckTransactionStateRequestHeader) request.decodeCommandCustomHeader(CheckTransactionStateRequestHeader.class);
         final ByteBuffer byteBuffer = ByteBuffer.wrap(request.getBody());
+        //获取封装的信息
         final MessageExt messageExt = MessageDecoder.decode(byteBuffer);
         if (messageExt != null) {
-            //获取PGROUP，获取生产者对应的组
+            //获取所在的组
             final String group = messageExt.getProperty(MessageConst.PROPERTY_PRODUCER_GROUP);
             if (group != null) {
+                //获取生产者实例
                 MQProducerInner producer = this.mqClientFactory.selectProducer(group);
                 if (producer != null) {
                     final String addr = RemotingHelper.parseChannelRemoteAddr(ctx.channel());

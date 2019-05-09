@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 
 /**
  * Schedule service for pull consumer
+ *
  */
 public class MQPullConsumerScheduleService {
     private final Logger log = ClientLogger.getLog();

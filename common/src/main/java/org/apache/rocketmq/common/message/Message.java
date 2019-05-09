@@ -22,21 +22,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 对应每一条发送的message
+ * tag:消息 TAG，用于消息过滤 。
+ * keys: Message 索引键， 多个用空格隔开， RocketMQ 可以根据这些 key 快速检索到消息 。
+ * waitStoreMsgOK:消息发送时是否等消息存储完成后再返回 。
+ * delayTimeLevel: 消息延迟级别，用于定时消息或消息重试 。
+ * 这些扩展属性存储在 Message 的 properties 中 。
  */
 public class Message implements Serializable {
     private static final long serialVersionUID = 8445773977080406428L;
-
     /**
-     * 对应的 Topic
+     * 该消息归属于哪个topic
      */
     private String topic;
     /**
-     *
+     * rocket暂时没有做处理
      */
     private int flag;
     /**
-     * 拓展字段 用于过滤
+     * Message 扩展属性主要包含下面几个 。
+     * tag:消息 TAG，用于消息过滤 。
+     * keys: Message 索引键， 多个用空格隔开， RocketMQ 可以根据这些 key 快速检索到消息 。
+     * waitStoreMsgOK:消息发送时是否等消息存储完成后再返回 。
+     * delayTimeLevel: 消息延迟级别，用于定时消息或消息重试 。
+     * 这些扩展属性存储在 Message 的 properties 中 。
      */
     private Map<String, String> properties;
     /**
@@ -48,6 +56,7 @@ public class Message implements Serializable {
     }
 
     public Message(String topic, byte[] body) {
+
         this(topic, "", "", 0, body, true);
     }
 
@@ -73,7 +82,7 @@ public class Message implements Serializable {
         if (keys != null && keys.length() > 0)
             //也是通过属性放在properties key->KEYS
             this.setKeys(keys);
-            //也是通过属性放在properties key->WAIT boolean类型
+        //也是通过属性放在properties key->WAIT boolean类型
         this.setWaitStoreMsgOK(waitStoreMsgOK);
     }
 

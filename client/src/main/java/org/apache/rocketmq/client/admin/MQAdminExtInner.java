@@ -16,7 +16,6 @@
  */
 package org.apache.rocketmq.client.admin;
 
-//这个接口 有什么用吗？还是仅仅用来标记的
 public interface MQAdminExtInner {
 
 }

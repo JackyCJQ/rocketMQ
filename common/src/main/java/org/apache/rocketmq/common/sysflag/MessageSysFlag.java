@@ -21,24 +21,28 @@ package org.apache.rocketmq.common.sysflag;
  */
 public class MessageSysFlag {
     /**
-     * 标记位 - 压缩
+     * 标记位 - 压缩 00000001
      */
     public final static int COMPRESSED_FLAG = 0x1;
+    /**
+     * tag标记 00000010
+     */
+
     public final static int MULTI_TAGS_FLAG = 0x1 << 1;
     /**
-     * 事务类型 - 非事务
+     * 事务类型 - 非事务 00000000
      */
     public final static int TRANSACTION_NOT_TYPE = 0;
     /**
-     * 事务类型 - 事务准备
+     * 事务类型 - 事务准备 00000100
      */
     public final static int TRANSACTION_PREPARED_TYPE = 0x1 << 2;
     /**
-     * 事务类型 - 提交
+     * 事务类型 - 提交 00001000
      */
     public final static int TRANSACTION_COMMIT_TYPE = 0x2 << 2;
     /**
-     * 事务类型 - 回滚
+     * 事务类型 - 回滚 00001100
      */
     public final static int TRANSACTION_ROLLBACK_TYPE = 0x3 << 2;
 

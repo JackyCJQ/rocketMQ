@@ -21,7 +21,6 @@ import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.remoting.common.RemotingUtil;
 
 /**
- * Client Common configuration
  * 客户端配置
  */
 public class ClientConfig {
@@ -34,26 +33,21 @@ public class ClientConfig {
     private String instanceName = System.getProperty("rocketmq.client.name", "DEFAULT");
     //获取cpu的数量
     private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
-    /**
-     * 默认每30秒从namesrv拉取topic信息
-     */
+
     private int pollNameServerInteval = 1000 * 30;
-    /**
-     * 与message broker默认心跳也是30s
-     */
+
     private int heartbeatBrokerInterval = 1000 * 30;
-    /**
-     * Offset persistent interval for consumer
-     */
+
     private int persistConsumerOffsetInterval = 1000 * 5;
-    //
+
     private boolean unitMode = false;
-    private String unitName;//这个名字代表什么
+    private String unitName;
     //默认是vip通道
     private boolean vipChannelEnabled = Boolean.parseBoolean(System.getProperty(SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY, "true"));
 
     /**
      * 创建MQ ClientId
+     *
      * @return ip@instanceName@unitName
      */
     public String buildMQClientId() {
@@ -87,7 +81,7 @@ public class ClientConfig {
     }
 
     /**
-     * 设置instance名为pid
+     * 如果客户端没有设置instance名字则默认使用进程号
      */
     public void changeInstanceNameToPID() {
         if (this.instanceName.equals("DEFAULT")) {
@@ -108,6 +102,11 @@ public class ClientConfig {
         this.vipChannelEnabled = cc.vipChannelEnabled;
     }
 
+    /**
+     * 深度赋值了一份
+     *
+     * @return
+     */
     public ClientConfig cloneClientConfig() {
         ClientConfig cc = new ClientConfig();
         cc.namesrvAddr = namesrvAddr;
@@ -190,9 +189,9 @@ public class ClientConfig {
     @Override
     public String toString() {
         return "ClientConfig [namesrvAddr=" + namesrvAddr + ", clientIP=" + clientIP + ", instanceName=" + instanceName
-            + ", clientCallbackExecutorThreads=" + clientCallbackExecutorThreads + ", pollNameServerInteval=" + pollNameServerInteval
-            + ", heartbeatBrokerInterval=" + heartbeatBrokerInterval + ", persistConsumerOffsetInterval="
-            + persistConsumerOffsetInterval + ", unitMode=" + unitMode + ", unitName=" + unitName + ", vipChannelEnabled="
-            + vipChannelEnabled + "]";
+                + ", clientCallbackExecutorThreads=" + clientCallbackExecutorThreads + ", pollNameServerInteval=" + pollNameServerInteval
+                + ", heartbeatBrokerInterval=" + heartbeatBrokerInterval + ", persistConsumerOffsetInterval="
+                + persistConsumerOffsetInterval + ", unitMode=" + unitMode + ", unitName=" + unitName + ", vipChannelEnabled="
+                + vipChannelEnabled + "]";
     }
 }

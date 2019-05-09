@@ -52,6 +52,7 @@ import java.util.Set;
  * </p>
  *
  * <p>
+ *     线程安全
  *     <strong>Thread Safety:</strong> After initialization, the instance can be regarded as thread-safe.
  * </p>
  */
@@ -68,7 +69,6 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * </p>
      * 消费分组
      *
-     * See <a href="http://rocketmq.incubator.apache.org/docs/core-concept/">here</a> for further discussion.
      */
     private String consumerGroup;
 
@@ -125,11 +125,11 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * Implying Seventeen twelve and 01 seconds on December 23, 2013 year<br>
      * Default backtracking consumption time Half an hour ago.
      */
-    // TODO 疑问：用途
     private String consumeTimestamp = UtilAll.timeMillisToHumanString3(System.currentTimeMillis() - (1000 * 60 * 30));
 
     /**
      * Queue allocation algorithm specifying how message queues are allocated to each consumer clients.
+     * 负载均衡策略
      */
     private AllocateMessageQueueStrategy allocateMessageQueueStrategy;
 
@@ -140,7 +140,6 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
     private Map<String /* topic */, String /* sub expression */> subscription = new HashMap<>();
 
     /**
-     * Message listener
      * 消息监听器
      */
     private MessageListener messageListener;
@@ -151,13 +150,11 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
     private OffsetStore offsetStore;
 
     /**
-     * Minimum consumer thread number
      * 消息线程最小数量
      */
     private int consumeThreadMin = 20;
 
     /**
-     * Max consumer thread number
      * 消息线程最大数量
      */
     private int consumeThreadMax = 64;
@@ -227,6 +224,7 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
      * Default constructor.
      */
     public DefaultMQPushConsumer() {
+         //默认的消费者组 没有勾子函数 负载均衡为平均消费
         this(MixAll.DEFAULT_CONSUMER_GROUP, null, new AllocateMessageQueueAveragely());
     }
 
@@ -242,18 +240,10 @@ public class DefaultMQPushConsumer extends ClientConfig implements MQPushConsume
         defaultMQPushConsumerImpl = new DefaultMQPushConsumerImpl(this, rpcHook);
     }
 
-    /**
-     * Constructor specifying RPC hook.
-     * @param rpcHook RPC hook to execute before each remoting command.
-     */
     public DefaultMQPushConsumer(RPCHook rpcHook) {
         this(MixAll.DEFAULT_CONSUMER_GROUP, rpcHook, new AllocateMessageQueueAveragely());
     }
 
-    /**
-     * Constructor specifying consumer group.
-     * @param consumerGroup Consumer group.
-     */
     public DefaultMQPushConsumer(final String consumerGroup) {
         this(consumerGroup, null, new AllocateMessageQueueAveragely());
     }

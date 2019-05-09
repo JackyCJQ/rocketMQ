@@ -23,13 +23,18 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 客户端日志
+ */
 public class ClientLogger {
     public static final String CLIENT_LOG_ROOT = "rocketmq.client.logRoot";
     public static final String CLIENT_LOG_MAXINDEX = "rocketmq.client.logFileMaxIndex";
     public static final String CLIENT_LOG_LEVEL = "rocketmq.client.logLevel";
+     //slf4j
     private static Logger log;
 
     static {
+        //说明是客户端日志
         log = createLogger(LoggerName.CLIENT_LOGGER_NAME);
     }
 

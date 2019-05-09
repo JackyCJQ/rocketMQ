@@ -27,16 +27,20 @@ import java.util.Set;
 
 /**
  * Consumer inner interface
+ * 消费者内部接口实现
  */
 public interface MQConsumerInner {
     String groupName();
 
+    //消息类型
     MessageModel messageModel();
 
     ConsumeType consumeType();
 
+    //指定从哪消费
     ConsumeFromWhere consumeFromWhere();
 
+    //订阅的消息
     Set<SubscriptionData> subscriptions();
 
     /**
@@ -44,10 +48,12 @@ public interface MQConsumerInner {
      */
     void doRebalance();
 
+    //持久化消费者偏移
     void persistConsumerOffset();
 
+    //更新主题订阅消息
     void updateTopicSubscribeInfo(final String topic, final Set<MessageQueue> info);
-
+    //判断订阅的主题是否更新了
     boolean isSubscribeTopicNeedUpdate(final String topic);
 
     boolean isUnitMode();
