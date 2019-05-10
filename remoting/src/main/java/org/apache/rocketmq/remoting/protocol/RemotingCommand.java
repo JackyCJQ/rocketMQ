@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * broker与nameserver交互时的请求参数
+ * 远程交互命令
  */
 public class RemotingCommand {
     //参数序列化的类型 默认为json
@@ -87,7 +87,7 @@ public class RemotingCommand {
     //默认的语言就是java
     private LanguageCode language = LanguageCode.JAVA;
     private int version = 0;
-    //
+    //每次请求序号就会加1
     private int opaque = requestId.getAndIncrement();
     //标注是请求还是返回
     private int flag = 0;
@@ -120,6 +120,7 @@ public class RemotingCommand {
      * @param cmd
      */
     private static void setCmdVersion(RemotingCommand cmd) {
+        //默认为-1
         if (configVersion >= 0) {
             cmd.setVersion(configVersion);
         } else {
@@ -272,6 +273,7 @@ public class RemotingCommand {
 
     /**
      * 解析请求头。不同的请求头代表不同的请求
+     *
      * @param classHeader
      * @return
      * @throws RemotingCommandException

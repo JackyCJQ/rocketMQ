@@ -625,8 +625,8 @@ public class MQClientInstance {
      * 如 isDefault=true && defaultMQProducer!=null 时，使用{@link DefaultMQProducer#createTopicKey}
      *
      * @param topic             Topic
-     * @param isDefault         是否默认
-     * @param defaultMQProducer producer
+     * @param isDefault         是否默认 false
+     * @param defaultMQProducer producer  null
      * @return 是否更新成功
      */
     public boolean updateTopicRouteInfoFromNameServer(final String topic, boolean isDefault, DefaultMQProducer defaultMQProducer) {
@@ -649,6 +649,7 @@ public class MQClientInstance {
                             }
                         }
                     } else {
+                        //直接获取topic信息
                         topicRouteData = this.mQClientAPIImpl.getTopicRouteInfoFromNameServer(topic, 1000 * 3);
                     }
                     if (topicRouteData != null) {

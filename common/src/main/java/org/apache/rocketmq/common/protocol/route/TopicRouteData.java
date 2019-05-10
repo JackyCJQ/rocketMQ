@@ -37,15 +37,15 @@ public class TopicRouteData extends RemotingSerializable {
      */
     private String orderTopicConf;
     /**
-     * 队列数组数据
+     * topic 队列元数据 。
      */
     private List<QueueData> queueDatas;
     /**
-     * Broker数组数据
+     * topic 分布的 broker元数据
      */
     private List<BrokerData> brokerDatas;
     /**
-     * Broker地址 和 FilterSrv Map
+     * broker 上过滤服务器地址列表。
      */
     private HashMap<String/* brokerAddr */, List<String>/* Filter Server */> filterServerTable;
 
@@ -154,6 +154,6 @@ public class TopicRouteData extends RemotingSerializable {
     @Override
     public String toString() {
         return "TopicRouteData [orderTopicConf=" + orderTopicConf + ", queueDatas=" + queueDatas
-            + ", brokerDatas=" + brokerDatas + ", filterServerTable=" + filterServerTable + "]";
+                + ", brokerDatas=" + brokerDatas + ", filterServerTable=" + filterServerTable + "]";
     }
 }

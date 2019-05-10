@@ -66,7 +66,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      */
     private final ConcurrentHashMap<String/* topic */, TopicPublishInfo> topicPublishInfoTable =
             new ConcurrentHashMap<String, TopicPublishInfo>();
-   //发送消息的勾子函数集合
+    //发送消息的勾子函数集合
     private final ArrayList<SendMessageHook> sendMessageHookList = new ArrayList<SendMessageHook>();
 
     private final RPCHook rpcHook;
@@ -95,6 +95,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
     /**
      * 核心构造函数
+     *
      * @param defaultMQProducer
      * @param rpcHook
      */
@@ -129,7 +130,8 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         this.sendMessageHookList.add(hook);
         log.info("register sendMessage Hook, {}", hook.hookName());
     }
-     //在使用之前一定要调用start
+
+    //在使用之前一定要调用start
     public void start() throws MQClientException {
         this.start(true);
     }
@@ -401,8 +403,6 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
     /**
      * 校验Producer是否处于运行{@link ServiceState#RUNNING}状态。
-     *
-     * @throws MQClientException 当不处于运行状态抛出client异常
      */
     private void makeSureStateOK() throws MQClientException {
         if (this.serviceState != ServiceState.RUNNING) {
@@ -523,27 +523,23 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      * @param sendCallback      发送回调
      * @param timeout           发送消息请求超时时间
      * @return 发送结果
-     * @throws MQClientException    当Client发生异常
-     * @throws RemotingException    当请求发生异常
-     * @throws MQBrokerException    当Broker发生异常
-     * @throws InterruptedException 当线程被打断
      */
-    private SendResult sendDefaultImpl(//
-                                       Message msg, //
-                                       final CommunicationMode communicationMode, //
-                                       final SendCallback sendCallback, //
-                                       final long timeout//
+    private SendResult sendDefaultImpl(
+            Message msg,
+            final CommunicationMode communicationMode, //
+            final SendCallback sendCallback, //
+            final long timeout//
     ) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
-        // 校验 Producer 处于运行状态
+        // 1。校验 Producer 处于运行状态
         this.makeSureStateOK();
-        // 校验消息格式
+        //2。校验消息的大小，topic符合约定
         Validators.checkMessage(msg, this.defaultMQProducer);
         //
         final long invokeID = random.nextLong(); // 调用编号；用于下面打印日志，标记为同一次发送消息
         long beginTimestampFirst = System.currentTimeMillis();
         long beginTimestampPrev = beginTimestampFirst;
-        @SuppressWarnings("UnusedAssignment")
         long endTimestamp = beginTimestampFirst;
+
         // 获取 Topic路由信息
         TopicPublishInfo topicPublishInfo = this.tryToFindTopicPublishInfo(msg.getTopic());
         if (topicPublishInfo != null && topicPublishInfo.ok()) {
@@ -672,6 +668,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         TopicPublishInfo topicPublishInfo = this.topicPublishInfoTable.get(topic);
         // 当无可用的 Topic发布信息时，从Namesrv获取一次
         if (null == topicPublishInfo || !topicPublishInfo.ok()) {
+            //如果不存在则放入一个新的topic信息在其中
             this.topicPublishInfoTable.putIfAbsent(topic, new TopicPublishInfo());
             this.mQClientFactory.updateTopicRouteInfoFromNameServer(topic);
             topicPublishInfo = this.topicPublishInfoTable.get(topic);
@@ -1156,9 +1153,6 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         return transactionSendResult;
     }
 
-    /**
-     * DEFAULT SYNC -------------------------------------------------------
-     */
     public SendResult send(Message msg) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         return send(msg, this.defaultMQProducer.getSendMsgTimeout());
     }

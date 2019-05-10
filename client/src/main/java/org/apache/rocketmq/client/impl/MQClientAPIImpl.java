@@ -1204,7 +1204,6 @@ public class MQClientAPIImpl {
         assert response != null;
         switch (response.getCode()) {
             case ResponseCode.TOPIC_NOT_EXIST: {
-                // TODO LOG
                 break;
             }
             case ResponseCode.SUCCESS: {
@@ -1226,12 +1225,10 @@ public class MQClientAPIImpl {
      * @param topic         Topic
      * @param timeoutMillis 超时时间
      * @return
-     * @throws RemotingException    调用异常
-     * @throws MQClientException    调用返回非SUCCESS
-     * @throws InterruptedException 中断
      */
     public TopicRouteData getTopicRouteInfoFromNameServer(final String topic, final long timeoutMillis)
             throws RemotingException, MQClientException, InterruptedException {
+        //只需携带一个topic信息即可
         GetRouteInfoRequestHeader requestHeader = new GetRouteInfoRequestHeader();
         requestHeader.setTopic(topic);
 

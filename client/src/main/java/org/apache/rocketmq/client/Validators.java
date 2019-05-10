@@ -63,8 +63,8 @@ public class Validators {
         //对于分组名字字符的验证
         if (!regularExpressionMatcher(group, PATTERN)) {
             throw new MQClientException(String.format(
-                "the specified group[%s] contains illegal characters, allowing only %s", group,
-                VALID_PATTERN_STR), null);
+                    "the specified group[%s] contains illegal characters, allowing only %s", group,
+                    VALID_PATTERN_STR), null);
         }
         //默认最大255个字符
         if (group.length() > CHARACTER_MAX_LENGTH) {
@@ -88,29 +88,27 @@ public class Validators {
     /**
      * Validate message
      *
-     * @param msg 消息
+     * @param msg               消息
      * @param defaultMQProducer producer
      * @throws MQClientException 当 msg 格式不正确
      */
     public static void checkMessage(Message msg, DefaultMQProducer defaultMQProducer)
-        throws MQClientException {
+            throws MQClientException {
         if (null == msg) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message is null");
         }
         // topic
         Validators.checkTopic(msg.getTopic());
-        // body
         if (null == msg.getBody()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body is null");
         }
-
         if (0 == msg.getBody().length) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body length is zero");
         }
         //消息体最大为4m
         if (msg.getBody().length > defaultMQProducer.getMaxMessageSize()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL,
-                "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
+                    "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());
         }
     }
 
@@ -126,18 +124,17 @@ public class Validators {
         //对于topic的校验，只含有普通字符
         if (!regularExpressionMatcher(topic, PATTERN)) {
             throw new MQClientException(String.format(
-                "The specified topic[%s] contains illegal characters, allowing only %s", topic,
-                VALID_PATTERN_STR), null);
+                    "The specified topic[%s] contains illegal characters, allowing only %s", topic,
+                    VALID_PATTERN_STR), null);
         }
         //topic的最大长度255
         if (topic.length() > CHARACTER_MAX_LENGTH) {
             throw new MQClientException("The specified topic is longer than topic max length 255.", null);
         }
         //是否和系统默认的topic冲突
-        //whether the same with system reserved keyword
         if (topic.equals(MixAll.DEFAULT_TOPIC)) {
             throw new MQClientException(
-                String.format("The topic[%s] is conflict with default topic.", topic), null);
+                    String.format("The topic[%s] is conflict with default topic.", topic), null);
         }
     }
 }

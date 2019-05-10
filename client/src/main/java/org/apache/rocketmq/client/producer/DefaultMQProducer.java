@@ -28,11 +28,14 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 
 import java.util.List;
 
+/**
+ * 第一次发送消息时，本地没有缓存 topic 的路由信息，查询 NameServer尝试获取，如果路由信息未找到，再次尝试用默认主题 DefaultMQProducerlmpl#createTopicKey去查询， 如果 BrokerConfig#autoCreateTopicEnable为 true时， NameServer将返回路由信息，
+ * 如果 autoCreateTopicEnable为 false将抛出无法找到 topic路由异常
+ */
 public class DefaultMQProducer extends ClientConfig implements MQProducer {
 
     //接口实际执行的位置
     protected final transient DefaultMQProducerImpl defaultMQProducerImpl;
-
     /**
      * 生产者所属组，消息服务器在回查事务状态时会随机选择该组中任何一 个生产者发起事务回查请求 。
      */
