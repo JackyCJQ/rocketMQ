@@ -21,6 +21,7 @@ package org.apache.rocketmq.remoting;
  * 远程服务的操作
  */
 public interface RemotingService {
+
     void start();
 
     void shutdown();

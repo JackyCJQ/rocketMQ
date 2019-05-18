@@ -28,28 +28,11 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 public class Producer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
-        /*
-         * Instantiate with a producer group name.
-         */
         DefaultMQProducer producer = new DefaultMQProducer("please_rename_unique_group_name");
 
-        producer.setNamesrvAddr("127.0.0.1:9876"); // TODO add by yunai
+        producer.setNamesrvAddr("127.0.0.1:9876"); //
 //        producer.setSendLatencyFaultEnable(true);
-        /*
-         * Specify name server addresses.
-         * <p/>
-         *
-         * Alternatively, you may specify name server addresses via exporting environmental variable: NAMESRV_ADDR
-         * <pre>
-         * {@code
-         * producer.setNamesrvAddr("name-server1-ip:9876;name-server2-ip:9876");
-         * }
-         * </pre>
-         */
 
-        /*
-         * Launch the instance.
-         */
         producer.start();
 
 //        Thread.sleep(10000000L);
@@ -67,8 +50,8 @@ public class Producer {
                  */
 
                 Message msg = new Message("TopicTest_mis" /* Topic */,
-                    "TagA" /* Tag */,
-                    (body).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
+                        "TagA" /* Tag */,
+                        (body).getBytes(RemotingHelper.DEFAULT_CHARSET) /* Message body */
                 );
 
                 /*

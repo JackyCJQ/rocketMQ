@@ -92,11 +92,15 @@ public class MQClientAPIImpl {
     public MQClientAPIImpl(final NettyClientConfig nettyClientConfig, final ClientRemotingProcessor clientRemotingProcessor,
                            RPCHook rpcHook, final ClientConfig clientConfig) {
         this.clientConfig = clientConfig;
+        //这个不清楚是用来做什么
         topAddressing = new TopAddressing(MixAll.WS_ADDR, clientConfig.getUnitName());
+        //根据netty配置创建一个客户端
         this.remotingClient = new NettyRemotingClient(nettyClientConfig, null);
+        //远程交互处理器
         this.clientRemotingProcessor = clientRemotingProcessor;
 
         this.remotingClient.registerRPCHook(rpcHook);
+        //发生对应的请求，回掉对应的处理函数
         this.remotingClient.registerProcessor(RequestCode.CHECK_TRANSACTION_STATE, this.clientRemotingProcessor, null);
 
         this.remotingClient.registerProcessor(RequestCode.NOTIFY_CONSUMER_IDS_CHANGED, this.clientRemotingProcessor, null);
@@ -253,8 +257,7 @@ public class MQClientAPIImpl {
      * @throws MQBrokerException    当Broker发生异常
      * @throws InterruptedException 当线程被打断
      */
-    public SendResult sendMessage(//
-                                  final String addr, // 1
+    public SendResult sendMessage(final String addr, // 1 broker地址
                                   final String brokerName, // 2
                                   final Message msg, // 3
                                   final SendMessageRequestHeader requestHeader, // 4

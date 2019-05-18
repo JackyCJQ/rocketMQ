@@ -19,6 +19,7 @@ package org.apache.rocketmq.remoting.common;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Inet6Address;
@@ -33,6 +34,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +99,6 @@ public class RemotingUtil {
 
     public static String getLocalAddress() {
         try {
-            // Traversal Network interface to get the first non-loopback and non-private address
             //获取网卡接口
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
             ArrayList<String> ipv4Result = new ArrayList<String>();
@@ -208,7 +209,7 @@ public class RemotingUtil {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 log.info("closeChannel: close the connection to remote address[{}] result: {}", addrRemote,
-                    future.isSuccess());
+                        future.isSuccess());
             }
         });
     }

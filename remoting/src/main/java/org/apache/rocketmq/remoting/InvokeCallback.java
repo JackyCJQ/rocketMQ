@@ -19,8 +19,9 @@ package org.apache.rocketmq.remoting;
 import org.apache.rocketmq.remoting.netty.ResponseFuture;
 
 /**
- * 回掉接口
+ * 异步调用回掉接口
  */
 public interface InvokeCallback {
+
     void operationComplete(final ResponseFuture responseFuture);
 }

@@ -31,9 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MQClientManager {
     private final static Logger log = ClientLogger.getLog();
-    /**
-     * 单例对象
-     */
+
     private static MQClientManager instance = new MQClientManager();
     private AtomicInteger factoryIndexGenerator = new AtomicInteger();
     /**
@@ -69,7 +67,7 @@ public class MQClientManager {
                     new MQClientInstance(clientConfig.cloneClientConfig(),
                             this.factoryIndexGenerator.getAndIncrement(), clientId, rpcHook);
             MQClientInstance prev = this.factoryTable.putIfAbsent(clientId, instance);
-           //判断之前是否已经存在相同的客户端
+            //判断之前是否已经存在相同的客户端
             if (prev != null) {
                 instance = prev;
                 log.warn("Returned Previous MQClientInstance for clientId:[{}]", clientId);

@@ -19,26 +19,36 @@ package org.apache.rocketmq.remoting.netty;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.rocketmq.remoting.InvokeCallback;
 import org.apache.rocketmq.remoting.common.SemaphoreReleaseOnlyOnce;
 import org.apache.rocketmq.remoting.protocol.RemotingCommand;
 
+/**
+ * 异步回掉上下文
+ */
 public class ResponseFuture {
     private final int opaque;
     private final long timeoutMillis;
+    //异步结果会回掉这个接口
     private final InvokeCallback invokeCallback;
+
     private final long beginTimestamp = System.currentTimeMillis();
+
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
 
     private final SemaphoreReleaseOnlyOnce once;
 
     private final AtomicBoolean executeCallbackOnlyOnce = new AtomicBoolean(false);
+
     private volatile RemotingCommand responseCommand;
+
     private volatile boolean sendRequestOK = true;
+
     private volatile Throwable cause;
 
     public ResponseFuture(int opaque, long timeoutMillis, InvokeCallback invokeCallback,
-        SemaphoreReleaseOnlyOnce once) {
+                          SemaphoreReleaseOnlyOnce once) {
         this.opaque = opaque;
         this.timeoutMillis = timeoutMillis;
         this.invokeCallback = invokeCallback;
@@ -117,8 +127,8 @@ public class ResponseFuture {
     @Override
     public String toString() {
         return "ResponseFuture [responseCommand=" + responseCommand + ", sendRequestOK=" + sendRequestOK
-            + ", cause=" + cause + ", opaque=" + opaque + ", timeoutMillis=" + timeoutMillis
-            + ", invokeCallback=" + invokeCallback + ", beginTimestamp=" + beginTimestamp
-            + ", countDownLatch=" + countDownLatch + "]";
+                + ", cause=" + cause + ", opaque=" + opaque + ", timeoutMillis=" + timeoutMillis
+                + ", invokeCallback=" + invokeCallback + ", beginTimestamp=" + beginTimestamp
+                + ", countDownLatch=" + countDownLatch + "]";
     }
 }

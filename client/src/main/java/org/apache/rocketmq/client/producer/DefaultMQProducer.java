@@ -34,7 +34,6 @@ import java.util.List;
  */
 public class DefaultMQProducer extends ClientConfig implements MQProducer {
 
-    //接口实际执行的位置
     protected final transient DefaultMQProducerImpl defaultMQProducerImpl;
     /**
      * 生产者所属组，消息服务器在回查事务状态时会随机选择该组中任何一 个生产者发起事务回查请求 。
@@ -55,7 +54,6 @@ public class DefaultMQProducer extends ClientConfig implements MQProducer {
     //消息重试时选择另外一个 Broker时，是否不等待存储结果就返回 ， 默认为 false。
     private boolean retryAnotherBrokerWhenNotStoreOK = false;
     //允许发送的最大消息长度，默认为 4M，眩值最大值为 2"32-1。
-
     private int maxMessageSize = 1024 * 1024 * 4;
 
 

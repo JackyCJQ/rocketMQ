@@ -29,39 +29,35 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
  * 除了基本的操作 producer还有自己的行为
  */
 public interface MQProducer extends MQAdmin {
-    //启动broker
+
     void start() throws MQClientException;
 
     void shutdown();
 
-    //查找该主题下所有的消息队列 。
     List<MessageQueue> fetchPublishMessageQueues(final String topic) throws MQClientException;
 
-    //同步发送消息，具体发送到主题中的哪个消息队列由负载算法决定 。
     SendResult send(final Message msg) throws MQClientException, RemotingException, MQBrokerException,
             InterruptedException;
 
-    //同步发送消息，如果发送超过 timeout 则抛出超时异常 。
     SendResult send(final Message msg, final long timeout) throws MQClientException,
             RemotingException, MQBrokerException, InterruptedException;
 
-    //异步发送消息， sendCallback参数是消息发送成功后的回调方法 。
     void send(final Message msg, final SendCallback sendCallback) throws MQClientException,
             RemotingException, InterruptedException;
 
     void send(final Message msg, final SendCallback sendCallback, final long timeout)
             throws MQClientException, RemotingException, InterruptedException;
 
-    //单向消息发送，就是不在乎发送结果，消息发送出去后该方法立 即返回 。
     void sendOneway(final Message msg) throws MQClientException, RemotingException,
             InterruptedException;
 
-    //发送到指定的消息对列
+    //对于消息顺序消费和重复消费的问题需要在客户端解决
     SendResult send(final Message msg, final MessageQueue mq) throws MQClientException,
             RemotingException, MQBrokerException, InterruptedException;
 
     SendResult send(final Message msg, final MessageQueue mq, final long timeout)
             throws MQClientException, RemotingException, MQBrokerException, InterruptedException;
+
 
     void send(final Message msg, final MessageQueue mq, final SendCallback sendCallback)
             throws MQClientException, RemotingException, InterruptedException;
@@ -72,7 +68,7 @@ public interface MQProducer extends MQAdmin {
     void sendOneway(final Message msg, final MessageQueue mq) throws MQClientException,
             RemotingException, InterruptedException;
 
-    //消息发送，指定消息选择算法，覆盖消息生产者默认的消息队列负载 。
+    //消息发送，指定消息队列选择算法，覆盖消息生产者默认的消息队列负载 。
     SendResult send(final Message msg, final MessageQueueSelector selector, final Object arg)
             throws MQClientException, RemotingException, MQBrokerException, InterruptedException;
 
@@ -84,6 +80,7 @@ public interface MQProducer extends MQAdmin {
               final SendCallback sendCallback) throws MQClientException, RemotingException,
             InterruptedException;
 
+    //最全的一个构造函数，可以直接看这个函数中参数即可
     void send(final Message msg, final MessageQueueSelector selector, final Object arg,
               final SendCallback sendCallback, final long timeout) throws MQClientException, RemotingException,
             InterruptedException;

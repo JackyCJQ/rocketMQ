@@ -21,7 +21,7 @@ import org.apache.rocketmq.common.UtilAll;
 import org.apache.rocketmq.remoting.common.RemotingUtil;
 
 /**
- * 客户端配置
+ * 客户端配置，主要通信设置
  */
 public class ClientConfig {
     public static final String SEND_MESSAGE_WITH_VIP_CHANNEL_PROPERTY = "com.rocketmq.sendMessageWithVIPChannel";
@@ -34,10 +34,11 @@ public class ClientConfig {
     //获取cpu的数量
     private int clientCallbackExecutorThreads = Runtime.getRuntime().availableProcessors();
 
+    //每30秒和namesrv交互一次
     private int pollNameServerInteval = 1000 * 30;
-
+    //心跳时间
     private int heartbeatBrokerInterval = 1000 * 30;
-
+    //持久化消费者偏移量
     private int persistConsumerOffsetInterval = 1000 * 5;
 
     private boolean unitMode = false;

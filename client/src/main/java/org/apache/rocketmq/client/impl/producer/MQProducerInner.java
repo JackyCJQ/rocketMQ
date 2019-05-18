@@ -27,29 +27,32 @@ import java.util.Set;
  */
 public interface MQProducerInner {
     /**
-     * 获取topic列表
+     * 获取所有的topic列表
+     *
      * @return
      */
     Set<String> getPublishTopicList();
 
     /**
-     * Topic 是否需要更新路由信息
+     * 该Topic 是否需要更新路由信息
      *
      * @param topic Topic
      * @return 是否需要
      */
     boolean isPublishTopicNeedUpdate(final String topic);
 
+    //事务检查监听
     TransactionCheckListener checkListener();
 
+    //检查事务的状态
     void checkTransactionState(final String addr, final MessageExt msg,
-        final CheckTransactionStateRequestHeader checkRequestHeader);
+                               final CheckTransactionStateRequestHeader checkRequestHeader);
 
     /**
-     * 更新 Topic 路由信息
+     * 去定就是要 更新 Topic 路由信息
      *
      * @param topic Topic
-     * @param info Topic 路由信息
+     * @param info  Topic 路由信息
      */
     void updateTopicPublishInfo(final String topic, final TopicPublishInfo info);
 

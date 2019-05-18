@@ -31,29 +31,27 @@ import java.util.concurrent.ExecutorService;
  */
 public interface RemotingClient extends RemotingService {
 
-    public void updateNameServerAddressList(final List<String> addrs);
+    void updateNameServerAddressList(final List<String> addrs);
 
-    public List<String> getNameServerAddressList();
+    List<String> getNameServerAddressList();
 
     //同步调用
-    public RemotingCommand invokeSync(final String addr, final RemotingCommand request,
-                                      final long timeoutMillis) throws InterruptedException, RemotingConnectException,
+    RemotingCommand invokeSync(final String addr, final RemotingCommand request,
+                               final long timeoutMillis) throws InterruptedException, RemotingConnectException,
             RemotingSendRequestException, RemotingTimeoutException;
 
-    //异步调用
-    public void invokeAsync(final String addr, final RemotingCommand request, final long timeoutMillis,
-                            final InvokeCallback invokeCallback) throws InterruptedException, RemotingConnectException,
+    //异步调用,就多了一个回掉接口
+    void invokeAsync(final String addr, final RemotingCommand request, final long timeoutMillis,
+                     final InvokeCallback invokeCallback) throws InterruptedException, RemotingConnectException,
             RemotingTooMuchRequestException, RemotingTimeoutException, RemotingSendRequestException;
 
-    //直接发送命令 不管结果
-    public void invokeOneway(final String addr, final RemotingCommand request, final long timeoutMillis)
+    void invokeOneway(final String addr, final RemotingCommand request, final long timeoutMillis)
             throws InterruptedException, RemotingConnectException, RemotingTooMuchRequestException,
             RemotingTimeoutException, RemotingSendRequestException;
 
-    //注册处理器
-    public void registerProcessor(final int requestCode, final NettyRequestProcessor processor,
-                                  final ExecutorService executor);
+    //注册处理返回结果的处理器
+    void registerProcessor(final int requestCode, final NettyRequestProcessor processor, final ExecutorService executor);
 
     //判断该channel是否是可写的
-    public boolean isChannelWriteable(final String addr);
+    boolean isChannelWriteable(final String addr);
 }

@@ -150,7 +150,7 @@ public class MQClientInstance {
      * 核心构造函数
      *
      * @param clientConfig  客户端的配置
-     * @param instanceIndex 实例的索引 每创建一个实例 就会增加一
+     * @param instanceIndex 实例的索引 每创建一个实例 序号就会增加一
      * @param clientId      客户端ID
      * @param rpcHook       勾子函数
      */

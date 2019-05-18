@@ -17,11 +17,13 @@
 package org.apache.rocketmq.remoting.common;
 
 import io.netty.channel.Channel;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+
 import org.apache.rocketmq.remoting.exception.RemotingConnectException;
 import org.apache.rocketmq.remoting.exception.RemotingSendRequestException;
 import org.apache.rocketmq.remoting.exception.RemotingTimeoutException;
@@ -34,6 +36,7 @@ public class RemotingHelper {
 
     /**
      * 打印错误的信息，同时打印栈的调用信息
+     *
      * @param e
      * @return
      */
@@ -42,7 +45,7 @@ public class RemotingHelper {
         if (e != null) {
             //这个信息是指 异常中指定的信息
             sb.append(e.toString());
-             //在打印斩的信息吗
+            //在打印斩的信息吗
             StackTraceElement[] stackTrace = e.getStackTrace();
             if (stackTrace != null && stackTrace.length > 0) {
                 StackTraceElement elment = stackTrace[0];
@@ -55,6 +58,7 @@ public class RemotingHelper {
 
     /**
      * 转化字符串信息到address格式信息
+     *
      * @param addr
      * @return
      */
@@ -68,6 +72,7 @@ public class RemotingHelper {
 
     /**
      * 同步调用
+     *
      * @param addr
      * @param request
      * @param timeoutMillis
@@ -77,9 +82,9 @@ public class RemotingHelper {
      * @throws RemotingSendRequestException
      * @throws RemotingTimeoutException
      */
-    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request,final long timeoutMillis)
+    public static RemotingCommand invokeSync(final String addr, final RemotingCommand request, final long timeoutMillis)
             throws InterruptedException, RemotingConnectException,
-        RemotingSendRequestException, RemotingTimeoutException {
+            RemotingSendRequestException, RemotingTimeoutException {
         long beginTime = System.currentTimeMillis();
         SocketAddress socketAddress = RemotingUtil.string2SocketAddress(addr);
         SocketChannel socketChannel = RemotingUtil.connect(socketAddress);
@@ -172,6 +177,7 @@ public class RemotingHelper {
 
     /**
      * 获取channel的远程链接地址
+     *
      * @param channel
      * @return
      */
@@ -196,6 +202,7 @@ public class RemotingHelper {
 
     /**
      * 解析远程主机的名字
+     *
      * @param channel
      * @return
      */
@@ -212,6 +219,7 @@ public class RemotingHelper {
 
     /**
      * 解析远程socket的地址
+     *
      * @param socketAddress
      * @return
      */
@@ -228,6 +236,7 @@ public class RemotingHelper {
 
     /**
      * 解析远程socket的名字
+     *
      * @param socketAddress
      * @return
      */

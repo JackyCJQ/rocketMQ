@@ -59,24 +59,23 @@ import java.util.concurrent.*;
 public class DefaultMQProducerImpl implements MQProducerInner {
     private final Logger log = ClientLogger.getLog();
     private final Random random = new Random();
-    //对用户暴露的API实现类
+
     private final DefaultMQProducer defaultMQProducer;
-    /**
-     * Topic 和 Topic信息 Map
-     */
+
     private final ConcurrentHashMap<String/* topic */, TopicPublishInfo> topicPublishInfoTable =
             new ConcurrentHashMap<String, TopicPublishInfo>();
-    //发送消息的勾子函数集合
+
     private final ArrayList<SendMessageHook> sendMessageHookList = new ArrayList<SendMessageHook>();
 
     private final RPCHook rpcHook;
+
     protected BlockingQueue<Runnable> checkRequestQueue;
 
     protected ExecutorService checkExecutor;
 
     private ServiceState serviceState = ServiceState.CREATE_JUST;
     /**
-     * MQClient对象
+     * MQClient对象，用户和namesrv交互
      */
     private MQClientInstance mQClientFactory;
 
@@ -148,7 +147,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                 this.serviceState = ServiceState.START_FAILED;
                 //1。校验所属的组名字是否合理
                 this.checkConfig();
-                //2。改变实例的名字为进程号
+                //2。改变实例的名字为进程号（如果用户没有设置instanceName）
                 if (!this.defaultMQProducer.getProducerGroup().equals(MixAll.CLIENT_INNER_PRODUCER_GROUP)) {
                     this.defaultMQProducer.changeInstanceNameToPID();
                 }
@@ -543,7 +542,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         // 获取 Topic路由信息
         TopicPublishInfo topicPublishInfo = this.tryToFindTopicPublishInfo(msg.getTopic());
         if (topicPublishInfo != null && topicPublishInfo.ok()) {
-            MessageQueue mq = null; // 最后选择消息要发送到的队列
+            MessageQueue mq = null;
             Exception exception = null;
             SendResult sendResult = null; // 最后一次发送结果
             int timesTotal = communicationMode == CommunicationMode.SYNC ? 1 + this.defaultMQProducer.getRetryTimesWhenSendFailed() : 1; // 同步多次调用
@@ -554,6 +553,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                 String lastBrokerName = null == mq ? null : mq.getBrokerName();
                 @SuppressWarnings("SpellCheckingInspection")
                 MessageQueue tmpmq = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName); // 选择消息要发送到的队列
+                //获取到要发送消息的队列
                 if (tmpmq != null) {
                     mq = tmpmq;
                     brokersSent[times] = mq.getBrokerName();
@@ -698,11 +698,11 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      * @throws MQBrokerException    当Broker发生异常
      * @throws InterruptedException 当线程被打断
      */
-    private SendResult sendKernelImpl(final Message msg, //
-                                      final MessageQueue mq, //
-                                      final CommunicationMode communicationMode, //
-                                      final SendCallback sendCallback, //
-                                      final TopicPublishInfo topicPublishInfo, //
+    private SendResult sendKernelImpl(final Message msg, //要发送的消息
+                                      final MessageQueue mq, //对应发送消息的接收队列
+                                      final CommunicationMode communicationMode, //发送方式，同步，异步
+                                      final SendCallback sendCallback, // 回掉函数
+                                      final TopicPublishInfo topicPublishInfo, // topic路由函数
                                       final long timeout) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
         // 获取 broker地址
         String brokerAddr = this.mQClientFactory.findBrokerAddressInPublish(mq.getBrokerName());
@@ -741,7 +741,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                     checkForbiddenContext.setUnitMode(this.isUnitMode());
                     this.executeCheckForbiddenHook(checkForbiddenContext);
                 }
-                // hook：发送消息前逻辑
+                // hook：发送消息前逻辑 封装勾子的上下文环境
                 if (this.hasSendMessageHook()) {
                     context = new SendMessageContext();
                     context.setProducer(this);
@@ -805,6 +805,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                         break;
                     case ONEWAY:
                     case SYNC:
+                        //通过实例 通过netty进行交互
                         sendResult = this.mQClientFactory.getMQClientAPIImpl().sendMessage(
                                 brokerAddr,
                                 mq.getBrokerName(),
@@ -819,7 +820,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                         assert false;
                         break;
                 }
-                // hook：发送消息后逻辑
+                // 如果有勾子函数 在进行回掉
                 if (this.hasSendMessageHook()) {
                     context.setSendResult(sendResult);
                     this.executeSendMessageHookAfter(context);
@@ -1209,6 +1210,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
     }
 
     public SendResult send(Message msg, long timeout) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+        //默认为同步发送
         return this.sendDefaultImpl(msg, CommunicationMode.SYNC, null, timeout);
     }
 
