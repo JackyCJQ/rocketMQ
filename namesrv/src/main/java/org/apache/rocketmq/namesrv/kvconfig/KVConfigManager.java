@@ -71,7 +71,6 @@ public class KVConfigManager {
                     this.configTable.put(namespace, kvTable);
                     log.info("putKVConfig create new Namespace {}", namespace);
                 }
-
                 final String prev = kvTable.put(key, value);
                 if (null != prev) {
                     log.info("putKVConfig update config item, Namespace: {} Key: {} Value: {}", //

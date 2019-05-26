@@ -49,7 +49,7 @@ public class NamesrvStartup {
     public static NamesrvController main0(String[] args) {
         //首先设置全局的版本
         //rocketmq.remoting.version 设置全局版本是V4_1_0_SNAPSHOT但是存放的值是对应的枚举类的序列
-        System.setProperty(RemotingCommand.REMOTING_VERSION_KEY, Integer.toString(MQVersion.CURRENT_VERSION));
+         System.setProperty(RemotingCommand.REMOTING_VERSION_KEY, Integer.toString(MQVersion.CURRENT_VERSION));
            //key-->com.rocketmq.remoting.socket.sndbuf.size
         if (null == System.getProperty(NettySystemConfig.COM_ROCKETMQ_REMOTING_SOCKET_SNDBUF_SIZE)) {
             //修改系统默认大小，修改为4k
