@@ -35,26 +35,40 @@ import org.slf4j.Logger;
  */
 public class MQPullConsumerScheduleService {
     private final Logger log = ClientLogger.getLog();
+    //监听MessageQueue的变化
     private final MessageQueueListener messageQueueListener = new MessageQueueListenerImpl();
+    //每一个queue对应一个任务
     private final ConcurrentHashMap<MessageQueue, PullTaskImpl> taskTable =
         new ConcurrentHashMap<MessageQueue, PullTaskImpl>();
     private DefaultMQPullConsumer defaultMQPullConsumer;
     private int pullThreadNums = 20;
+    //
     private ConcurrentHashMap<String /* topic */, PullTaskCallback> callbackTable =
         new ConcurrentHashMap<String, PullTaskCallback>();
+    //默认定时任务执行线程池
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
+    /**
+     * 默认是集群模式
+     * @param consumerGroup
+     */
     public MQPullConsumerScheduleService(final String consumerGroup) {
         this.defaultMQPullConsumer = new DefaultMQPullConsumer(consumerGroup);
         this.defaultMQPullConsumer.setMessageModel(MessageModel.CLUSTERING);
     }
 
+    /**
+     * 增加一个topic下的任务
+     * @param topic
+     * @param mqNewSet
+     */
     public void putTask(String topic, Set<MessageQueue> mqNewSet) {
         Iterator<Entry<MessageQueue, PullTaskImpl>> it = this.taskTable.entrySet().iterator();
         while (it.hasNext()) {
             Entry<MessageQueue, PullTaskImpl> next = it.next();
             if (next.getKey().getTopic().equals(topic)) {
                 if (!mqNewSet.contains(next.getKey())) {
+                    //取消之前同一个topic中的任务
                     next.getValue().setCancelled(true);
                     it.remove();
                 }
@@ -71,6 +85,7 @@ public class MQPullConsumerScheduleService {
         }
     }
 
+    //开始任务
     public void start() throws MQClientException {
         final String group = this.defaultMQPullConsumer.getConsumerGroup();
         this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
@@ -92,6 +107,7 @@ public class MQPullConsumerScheduleService {
     }
 
     public void shutdown() {
+        //先停止定时任务 在停止
         if (this.scheduledThreadPoolExecutor != null) {
             this.scheduledThreadPoolExecutor.shutdown();
         }
@@ -153,6 +169,7 @@ public class MQPullConsumerScheduleService {
 
     class PullTaskImpl implements Runnable {
         private final MessageQueue messageQueue;
+        //保证线程间的可用性
         private volatile boolean cancelled = false;
 
         public PullTaskImpl(final MessageQueue messageQueue) {
@@ -163,6 +180,7 @@ public class MQPullConsumerScheduleService {
         public void run() {
             String topic = this.messageQueue.getTopic();
             if (!this.isCancelled()) {
+                //根据topic获取
                 PullTaskCallback pullTaskCallback =
                     MQPullConsumerScheduleService.this.callbackTable.get(topic);
                 if (pullTaskCallback != null) {
@@ -174,7 +192,7 @@ public class MQPullConsumerScheduleService {
                         context.setPullNextDelayTimeMillis(1000);
                         log.error("doPullTask Exception", e);
                     }
-
+                    //开始执行定时拉取任务
                     if (!this.isCancelled()) {
                         MQPullConsumerScheduleService.this.scheduledThreadPoolExecutor.schedule(this,
                             context.getPullNextDelayTimeMillis(), TimeUnit.MILLISECONDS);

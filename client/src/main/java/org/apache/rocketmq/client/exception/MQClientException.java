@@ -21,6 +21,7 @@ import org.apache.rocketmq.common.help.FAQUrl;
 
 public class MQClientException extends Exception {
     private static final long serialVersionUID = -5758410930844185841L;
+    //返回码和错误的原因
     private int responseCode;
     private String errorMessage;
 

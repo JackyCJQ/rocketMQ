@@ -27,7 +27,7 @@ public class ConsumeOrderlyContext {
     private final MessageQueue messageQueue;
     //自动确认 这个也应该可以手动实现确认 没有手动确认消费一个信息
     private boolean autoCommit = true;
-    //挂起当前队列时间 等待顺序着顺序消费吗？
+    //挂起当前队列时间
     private long suspendCurrentQueueTimeMillis = -1;
 
     public ConsumeOrderlyContext(MessageQueue messageQueue) {

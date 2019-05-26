@@ -21,7 +21,7 @@ package org.apache.rocketmq.client.hook;
  */
 public interface SendMessageHook {
     /**
-     * 可以起一个名字
+     * 勾子函数的名字
      *
      * @return
      */

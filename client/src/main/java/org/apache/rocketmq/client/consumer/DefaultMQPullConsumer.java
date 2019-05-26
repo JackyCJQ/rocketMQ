@@ -39,7 +39,7 @@ import java.util.Set;
  * 默认拉取模式的消费者
  */
 public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsumer {
-    //这个是指什么实现？
+    //这个是具体的DefaultMQPullConsumer实现，而DefaultMQPullConsumer是暴露给用户使用的api
     protected final transient DefaultMQPullConsumerImpl defaultMQPullConsumerImpl;
 
     /**
@@ -326,7 +326,6 @@ public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsume
             MessageDecoder.decodeMessageId(uniqKey);
             return this.viewMessage(uniqKey);
         } catch (Exception e) {
-            // Ignore
         }
         return this.defaultMQPullConsumerImpl.queryMessageByUniqKey(topic, uniqKey);
     }

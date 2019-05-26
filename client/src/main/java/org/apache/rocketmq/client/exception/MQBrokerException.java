@@ -21,12 +21,13 @@ import org.apache.rocketmq.common.help.FAQUrl;
 
 public class MQBrokerException extends Exception {
     private static final long serialVersionUID = 5975020272601250368L;
+    //返回码和错误的原因
     private final int responseCode;
     private final String errorMessage;
 
     public MQBrokerException(int responseCode, String errorMessage) {
         super(FAQUrl.attachDefaultURL("CODE: " + UtilAll.responseCode2String(responseCode) + "  DESC: "
-            + errorMessage));
+                + errorMessage));
         this.responseCode = responseCode;
         this.errorMessage = errorMessage;
     }

@@ -22,7 +22,7 @@ package org.apache.rocketmq.client.consumer;
  */
 public interface PullCallback {
     /**
-     *
+     *拉取成功时回掉的方法
      * @param pullResult
      */
     void onSuccess(final PullResult pullResult);
