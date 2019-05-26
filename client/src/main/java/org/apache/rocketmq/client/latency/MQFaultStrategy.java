@@ -54,6 +54,7 @@ public class MQFaultStrategy {
      * @return 消息队列
      */
     public MessageQueue selectOneMessageQueue(final TopicPublishInfo tpInfo, final String lastBrokerName) {
+        //如果开关打开了
         if (this.sendLatencyFaultEnable) {
             try {
                 // 获取 brokerName=lastBrokerName && 可用的一个消息队列
@@ -62,7 +63,9 @@ public class MQFaultStrategy {
                     int pos = Math.abs(index++) % tpInfo.getMessageQueueList().size();
                     if (pos < 0)
                         pos = 0;
+                    //获取这个序列的函数
                     MessageQueue mq = tpInfo.getMessageQueueList().get(pos);
+                    //判断一下这个broker是否可以用
                     if (latencyFaultTolerance.isAvailable(mq.getBrokerName())) {
                         if (null == lastBrokerName || mq.getBrokerName().equals(lastBrokerName))
                             return mq;

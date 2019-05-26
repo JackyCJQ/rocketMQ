@@ -28,19 +28,29 @@ import org.apache.rocketmq.common.message.MessageType;
  * 发送消息的上下文
  */
 public class SendMessageContext {
+    //生产者所属的组名
     private String producerGroup;
+    //发送的消息
     private Message message;
+    //消息所在的队列
     private MessageQueue mq;
+    //要发送的broker的地址
     private String brokerAddr;
+
     private String bornHost;
+    //message发送的方式（同步，异步，oneway）
     private CommunicationMode communicationMode;
+    //发送的结果
     private SendResult sendResult;
     //异常
     private Exception exception;
+    //消息跟踪上下文
     private Object mqTraceContext;
+    //发送所携带的额外属性
     private Map<String, String> props;
     //默认的mq实现
     private DefaultMQProducerImpl producer;
+
     private MessageType msgType = MessageType.Normal_Msg;
 
     public MessageType getMsgType() {

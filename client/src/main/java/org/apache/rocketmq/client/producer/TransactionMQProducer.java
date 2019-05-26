@@ -20,7 +20,11 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.RPCHook;
 
+/**
+ * 事务mq生产者
+ */
 public class TransactionMQProducer extends DefaultMQProducer {
+    //多了事务检查的一个监听
     private TransactionCheckListener transactionCheckListener;
     private int checkThreadPoolMinSize = 1;
     private int checkThreadPoolMaxSize = 1;

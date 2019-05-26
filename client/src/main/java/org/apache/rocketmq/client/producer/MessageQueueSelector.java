@@ -22,7 +22,7 @@ import org.apache.rocketmq.common.message.MessageQueue;
 import java.util.List;
 
 /**
- * 消息队列选择器
+ * 消息队列选择器（发送端通过实现这个接口，来指定发送到指定的队列）
  */
 public interface MessageQueueSelector {
 

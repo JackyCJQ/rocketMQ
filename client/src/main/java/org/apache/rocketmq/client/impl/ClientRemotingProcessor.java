@@ -56,6 +56,7 @@ public class ClientRemotingProcessor implements NettyRequestProcessor {
 
     @Override
     public RemotingCommand processRequest(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+        //根据请求码进行判断
         switch (request.getCode()) {
             //检查事务状态
             case RequestCode.CHECK_TRANSACTION_STATE:

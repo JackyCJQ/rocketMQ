@@ -17,7 +17,7 @@
 package org.apache.rocketmq.client.impl;
 
 /**
- * 获得Broker信息
+ * 获得Broker信息结果
  */
 public class FindBrokerResult {
     /**

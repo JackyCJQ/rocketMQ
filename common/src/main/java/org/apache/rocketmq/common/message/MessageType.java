@@ -25,7 +25,13 @@ public enum MessageType {
      * 普通消息
      */
     Normal_Msg,
+    /**
+     * 事务消息第一次发送的类型
+     */
     Trans_Msg_Half,
+    /**
+     * 提交事务消息
+     */
     Trans_msg_Commit,
     /**
      * 延迟消息
