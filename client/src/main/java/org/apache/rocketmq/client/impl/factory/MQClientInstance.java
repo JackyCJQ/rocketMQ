@@ -156,6 +156,7 @@ public class MQClientInstance {
      */
     public MQClientInstance(ClientConfig clientConfig, int instanceIndex, String clientId, RPCHook rpcHook) {
         this.clientConfig = clientConfig;
+        //实例的索引，每新建一个实例，就会创建一个索引
         this.instanceIndex = instanceIndex;
         //客户端netty配置,客户端需要和namesrv交互
         this.nettyClientConfig = new NettyClientConfig();
@@ -195,6 +196,7 @@ public class MQClientInstance {
     }
 
     /**
+     *
      * 将 Topic路由数据 转换成 Topic发布信息
      * 顺序消息
      * 非顺序消息
@@ -206,12 +208,13 @@ public class MQClientInstance {
     public static TopicPublishInfo topicRouteData2TopicPublishInfo(final String topic, final TopicRouteData route) {
         TopicPublishInfo info = new TopicPublishInfo();
         info.setTopicRouteData(route);
-        if (route.getOrderTopicConf() != null && route.getOrderTopicConf().length() > 0) { // TODO 疑问：为什么这么处理
+        if (route.getOrderTopicConf() != null && route.getOrderTopicConf().length() > 0) {
             String[] brokers = route.getOrderTopicConf().split(";");
             for (String broker : brokers) {
                 String[] item = broker.split(":");
                 int nums = Integer.parseInt(item[1]);
                 for (int i = 0; i < nums; i++) {
+                    //添加具体的messageQueue  broker 和 broker中对应的第几个队列
                     MessageQueue mq = new MessageQueue(topic, item[0], i);
                     info.getMessageQueueList().add(mq);
                 }
@@ -219,7 +222,7 @@ public class MQClientInstance {
 
             info.setOrderTopic(true);
         } else {
-            List<QueueData> qds = route.getQueueDatas(); // TODO 疑问：是不是不同的集群，会发送多条消息
+            List<QueueData> qds = route.getQueueDatas();
             Collections.sort(qds);
             for (QueueData qd : qds) {
                 if (PermName.isWriteable(qd.getPerm())) {
@@ -283,7 +286,7 @@ public class MQClientInstance {
                     if (null == this.clientConfig.getNamesrvAddr()) {
                         this.mQClientAPIImpl.fetchNameServerAddr();
                     }
-                    // 启动netty客户端，用户交互
+                    // 启动netty客户端，用于交互
                     this.mQClientAPIImpl.start();
                     // Start various schedule tasks
                     this.startScheduledTask();
@@ -625,12 +628,13 @@ public class MQClientInstance {
      * 如 isDefault=true && defaultMQProducer!=null 时，使用{@link DefaultMQProducer#createTopicKey}
      *
      * @param topic             Topic
-     * @param isDefault         是否默认 false
+     * @param isDefault         是否默认 true
      * @param defaultMQProducer producer  null
      * @return 是否更新成功
      */
     public boolean updateTopicRouteInfoFromNameServer(final String topic, boolean isDefault, DefaultMQProducer defaultMQProducer) {
         try {
+            //尝试加锁3秒，3秒后会自动释放
             if (this.lockNamesrv.tryLock(LOCK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)) {
                 try {
                     TopicRouteData topicRouteData;
@@ -642,7 +646,9 @@ public class MQClientInstance {
                         topicRouteData = this.mQClientAPIImpl.getDefaultTopicRouteInfoFromNameServer(defaultMQProducer.getCreateTopicKey(),
                                 1000 * 3);
                         if (topicRouteData != null) {
+                            //获取到多个broker
                             for (QueueData data : topicRouteData.getQueueDatas()) {
+                                //设置的topicQueue数量和返回的数量，两者取一个最小值
                                 int queueNums = Math.min(defaultMQProducer.getDefaultTopicQueueNums(), data.getReadQueueNums());
                                 data.setReadQueueNums(queueNums);
                                 data.setWriteQueueNums(queueNums);
@@ -660,7 +666,7 @@ public class MQClientInstance {
                         } else {
                             log.info("the topic[{}] route info changed, old[{}] ,new[{}]", topic, old, topicRouteData);
                         }
-
+                        //第一次获取路由信息或者是定时更新路由信息
                         if (changed) {
                             TopicRouteData cloneTopicRouteData = topicRouteData.cloneTopicRouteData(); // 克隆对象的原因：topicRouteData会被设置到下面的publishInfo/subscribeInfo
 
@@ -995,7 +1001,6 @@ public class MQClientInstance {
             log.warn("the producer group[{}] exist already.", group);
             return false;
         }
-
         return true;
     }
 

@@ -1196,6 +1196,15 @@ public class MQClientAPIImpl {
         throw new MQBrokerException(response.getCode(), response.getRemark());
     }
 
+    /**
+     * 封装请求去更新路由信息
+     * @param topic
+     * @param timeoutMillis
+     * @return
+     * @throws RemotingException
+     * @throws MQClientException
+     * @throws InterruptedException
+     */
     public TopicRouteData getDefaultTopicRouteInfoFromNameServer(final String topic, final long timeoutMillis)
             throws RemotingException, MQClientException, InterruptedException {
         GetRouteInfoRequestHeader requestHeader = new GetRouteInfoRequestHeader();

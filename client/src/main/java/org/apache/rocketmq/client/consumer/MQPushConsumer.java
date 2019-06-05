@@ -25,16 +25,9 @@ import org.apache.rocketmq.client.exception.MQClientException;
  * Push consumer
  */
 public interface MQPushConsumer extends MQConsumer {
-    /**
-     * Start the consumer
-     *
-     * @throws MQClientException
-     */
+
     void start() throws MQClientException;
 
-    /**
-     * Shutdown the consumer
-     */
     void shutdown();
 
     /**
@@ -53,17 +46,17 @@ public interface MQPushConsumer extends MQConsumer {
     /**
      * Subscribe some topic
      *
-     * @param topic Topic
+     * @param topic         Topic
      * @param subExpression subscription expression.it only support or operation such as "tag1 || tag2 || tag3" <br> if null or * expression,meaning subscribe
-     * all
+     *                      all
      */
     void subscribe(final String topic, final String subExpression) throws MQClientException;
 
     /**
      * Subscribe some topic
      *
-     * @param topic Topic
-     * @param fullClassName full class name,must extend org.apache.rocketmq.common.filter. MessageFilter
+     * @param topic             Topic
+     * @param fullClassName     full class name,must extend org.apache.rocketmq.common.filter. MessageFilter
      * @param filterClassSource class source code,used UTF-8 file encoding,must be responsible for your code safety
      */
     void subscribe(final String topic, final String fullClassName, final String filterClassSource) throws MQClientException;

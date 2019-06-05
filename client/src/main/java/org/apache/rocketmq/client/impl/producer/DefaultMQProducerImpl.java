@@ -157,8 +157,9 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
                 // 4。注册Producer,往这个客户端里注册一个生产者实例
                 boolean registerOK = mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);
-                //如果注册失败，抛出异常
+                //如果该group已经注册过了
                 if (!registerOK) {
+                    //默认每个虚拟机上只能建立一个同group的生产者
                     this.serviceState = ServiceState.CREATE_JUST;
                     throw new MQClientException("The producer group[" + this.defaultMQProducer.getProducerGroup()
                             + "] has been created before, specify another name please." + FAQUrl.suggestTodo(FAQUrl.GROUP_NAME_DUPLICATE_URL),
@@ -539,7 +540,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         long beginTimestampPrev = beginTimestampFirst;
         long endTimestamp = beginTimestampFirst;
 
-        // 获取 Topic路由信息
+        // 获取Topic路由信息
         TopicPublishInfo topicPublishInfo = this.tryToFindTopicPublishInfo(msg.getTopic());
         if (topicPublishInfo != null && topicPublishInfo.ok()) {
             MessageQueue mq = null;
@@ -660,11 +661,11 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      * 获取 Topic发布信息
      * 如果获取不到，或者状态不正确，则从 Namesrv获取一次
      *
-     * @param topic Topic
-     * @return topic 信息
+     * @param topic Topic topic的名字
+     * @return topic路由信息
      */
     private TopicPublishInfo tryToFindTopicPublishInfo(final String topic) {
-        // 缓存中获取 Topic发布信息
+        // 缓存中获取 Topic发布信息，在创建生产者的时候会new一个空的路由信息填充进入
         TopicPublishInfo topicPublishInfo = this.topicPublishInfoTable.get(topic);
         // 当无可用的 Topic发布信息时，从Namesrv获取一次
         if (null == topicPublishInfo || !topicPublishInfo.ok()) {

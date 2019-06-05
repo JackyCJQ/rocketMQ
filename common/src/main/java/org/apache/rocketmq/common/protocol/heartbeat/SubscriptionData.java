@@ -39,7 +39,7 @@ public class SubscriptionData implements Comparable<SubscriptionData> {
      */
     private boolean classFilterMode = false;
     /**
-     * Topic
+     * 订阅的主题 Topic
      */
     private String topic;
     /**
@@ -47,7 +47,7 @@ public class SubscriptionData implements Comparable<SubscriptionData> {
      */
     private String subString;
     /**
-     * 标签集合
+     * 订阅的标签的集合
      */
     private Set<String> tagsSet = new HashSet<>();
     /**

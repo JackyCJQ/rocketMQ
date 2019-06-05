@@ -44,26 +44,29 @@ public class FilterAPI {
      * 根据 Topic 和 订阅表达式 创建订阅数据
      *
      * @param consumerGroup 消费分组
-     * @param topic Topic
-     * @param subString 订阅表达式
+     * @param topic         Topic
+     * @param subString     订阅表达式
      * @return 订阅数据
      * @throws Exception 当解析订阅表达式时
      */
     public static SubscriptionData buildSubscriptionData(final String consumerGroup, String topic,
-        String subString) throws Exception {
+                                                         String subString) throws Exception {
+        //订阅的主题
         SubscriptionData subscriptionData = new SubscriptionData();
         subscriptionData.setTopic(topic);
         subscriptionData.setSubString(subString);
-        // 处理订阅表达式
+        // 如果没有指定子表达式或者是订阅了所有的标签或者是空字符串，都是订阅全部
         if (null == subString || subString.equals(SubscriptionData.SUB_ALL) || subString.length() == 0) {
             subscriptionData.setSubString(SubscriptionData.SUB_ALL);
         } else {
+            //利用 | 进行分割
             String[] tags = subString.split("\\|\\|");
             if (tags.length > 0) {
                 for (String tag : tags) {
                     if (tag.length() > 0) {
                         String trimString = tag.trim();
                         if (trimString.length() > 0) {
+                            //订阅的消息里面增加这些标签
                             subscriptionData.getTagsSet().add(trimString);
                             subscriptionData.getCodeSet().add(trimString.hashCode());
                         }
@@ -73,7 +76,6 @@ public class FilterAPI {
                 throw new Exception("subString split error");
             }
         }
-
         return subscriptionData;
     }
 }
