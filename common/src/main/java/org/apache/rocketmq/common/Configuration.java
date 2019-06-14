@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 public class Configuration {
 
     private final Logger log;
-
+    //所有解析的配置类
     private List<Object> configObjectList = new ArrayList<Object>(4);
     private String storePath;
     private boolean storePathFromConfig = false;

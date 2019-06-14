@@ -115,13 +115,14 @@ public class NamesrvController {
             this.remotingServer.registerDefaultProcessor(new ClusterTestRequestProcessor(this, namesrvConfig.getProductEnvName()),
                     this.remotingExecutor);
         } else {
-            //如果是正常
+            //如果是正常,注册处理器和对应处理线程池
             this.remotingServer.registerDefaultProcessor(new DefaultRequestProcessor(this), this.remotingExecutor);
         }
     }
 
     /**
      * 启动监听 处理来自broker的链接
+     *
      * @throws Exception
      */
     public void start() throws Exception {

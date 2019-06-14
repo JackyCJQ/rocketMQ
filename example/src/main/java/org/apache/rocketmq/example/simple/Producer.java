@@ -25,17 +25,19 @@ import org.apache.rocketmq.remoting.common.RemotingHelper;
 public class Producer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 
+        //使用还是比较简单的
         DefaultMQProducer producer = new DefaultMQProducer("ProducerGroupName");
-
+        //启动mq
         producer.start();
 
-        for (int i = 0; i < 10000000; i++)
+        for (int i = 0; i < 10; i++)
             try {
                 {
+                    //topic tag keys message
                     Message msg = new Message("TopicTest",
-                        "TagA",
-                        "OrderID188",
-                        "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
+                            "TagA",
+                            "OrderID188",
+                            "Hello world".getBytes(RemotingHelper.DEFAULT_CHARSET));
                     SendResult sendResult = producer.send(msg);
                     System.out.printf("%s%n", sendResult);
                 }

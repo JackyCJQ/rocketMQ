@@ -94,18 +94,20 @@ public class Validators {
      */
     public static void checkMessage(Message msg, DefaultMQProducer defaultMQProducer)
             throws MQClientException {
+        //1.要发送的消息不能为null
         if (null == msg) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message is null");
         }
-        // topic
+        //2.发送消息的topic符合要求
         Validators.checkTopic(msg.getTopic());
         if (null == msg.getBody()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body is null");
         }
+        //3。发送的消息体不能为空
         if (0 == msg.getBody().length) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL, "the message body length is zero");
         }
-        //消息体最大为4m
+        //4。发送的消息体最大为4m
         if (msg.getBody().length > defaultMQProducer.getMaxMessageSize()) {
             throw new MQClientException(ResponseCode.MESSAGE_ILLEGAL,
                     "the message body size over max value, MAX: " + defaultMQProducer.getMaxMessageSize());

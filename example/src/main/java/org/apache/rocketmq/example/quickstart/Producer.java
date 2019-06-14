@@ -22,9 +22,6 @@ import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 
-/**
- * This class demonstrates how to send messages to brokers using provided {@link DefaultMQProducer}.
- */
 public class Producer {
     public static void main(String[] args) throws MQClientException, InterruptedException {
 

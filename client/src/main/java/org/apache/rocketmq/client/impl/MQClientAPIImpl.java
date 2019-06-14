@@ -91,8 +91,9 @@ public class MQClientAPIImpl {
 
     public MQClientAPIImpl(final NettyClientConfig nettyClientConfig, final ClientRemotingProcessor clientRemotingProcessor,
                            RPCHook rpcHook, final ClientConfig clientConfig) {
+        //客户端配置
         this.clientConfig = clientConfig;
-        //这个不清楚是用来做什么
+        //
         topAddressing = new TopAddressing(MixAll.WS_ADDR, clientConfig.getUnitName());
         //根据netty配置创建一个客户端
         this.remotingClient = new NettyRemotingClient(nettyClientConfig, null);
@@ -180,6 +181,17 @@ public class MQClientAPIImpl {
 
     }
 
+    /**
+     * 创建一个topic
+     * @param addr 每个broker的主节点地址
+     * @param defaultTopic 默认topic的名字
+     * @param topicConfig  topic的配置
+     * @param timeoutMillis 超时时间
+     * @throws RemotingException
+     * @throws MQBrokerException
+     * @throws InterruptedException
+     * @throws MQClientException
+     */
     public void createTopic(final String addr, final String defaultTopic, final TopicConfig topicConfig, final long timeoutMillis)
             throws RemotingException, MQBrokerException, InterruptedException, MQClientException {
         CreateTopicRequestHeader requestHeader = new CreateTopicRequestHeader();
@@ -193,7 +205,7 @@ public class MQClientAPIImpl {
         requestHeader.setOrder(topicConfig.isOrder());
 
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.UPDATE_AND_CREATE_TOPIC, requestHeader);
-
+        //基本上都是同步调用
         RemotingCommand response = this.remotingClient.invokeSync(MixAll.brokerVIPChannel(this.clientConfig.isVipChannelEnabled(), addr),
                 request, timeoutMillis);
         assert response != null;
@@ -323,7 +335,7 @@ public class MQClientAPIImpl {
         return this.processSendResponse(brokerName, msg, response);
     }
 
-    // TODO 待读
+    // 异步调用发送消息
     private void sendMessageAsync(//
                                   final String addr, //
                                   final String brokerName, //
@@ -470,7 +482,6 @@ public class MQClientAPIImpl {
             case ResponseCode.FLUSH_DISK_TIMEOUT:
             case ResponseCode.FLUSH_SLAVE_TIMEOUT:
             case ResponseCode.SLAVE_NOT_AVAILABLE: {
-                // TODO LOG
             }
             case ResponseCode.SUCCESS: {
                 SendStatus sendStatus = SendStatus.SEND_OK;
@@ -1223,7 +1234,7 @@ public class MQClientAPIImpl {
     }
 
     /**
-     * 向 Namesrv 请求 Topic 路由信息
+     * 向Namesrv请求Topic路由信息
      *
      * @param topic         Topic
      * @param timeoutMillis 超时时间
@@ -1236,7 +1247,7 @@ public class MQClientAPIImpl {
         requestHeader.setTopic(topic);
 
         RemotingCommand request = RemotingCommand.createRequestCommand(RequestCode.GET_ROUTEINTO_BY_TOPIC, requestHeader);
-
+        //通过netty实现同步调用
         RemotingCommand response = this.remotingClient.invokeSync(null, request, timeoutMillis);
         assert response != null;
         switch (response.getCode()) {
@@ -1248,13 +1259,14 @@ public class MQClientAPIImpl {
             case ResponseCode.SUCCESS: {
                 byte[] body = response.getBody();
                 if (body != null) {
+                    //只有这一个成功获取结果的出口
                     return TopicRouteData.decode(body, TopicRouteData.class);
                 }
             }
             default:
                 break;
         }
-
+        //最后如果没有成功的获取到topic对应的路由信息
         throw new MQClientException(response.getCode(), response.getRemark());
     }
 

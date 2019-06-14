@@ -133,15 +133,15 @@ public class MixAll {
      * 2. 备份准备写入文件到.bak文件
      * 3. 删除原文件，将.tmp修改成文件
      *
-     * @param str 内容
+     * @param str      内容
      * @param fileName 文件名
      * @throws IOException 当IO发生异常时
      */
     public static void string2File(final String str, final String fileName) throws IOException {
-        // 写到 tmp文件
+        //把新的内容先写到一个文件中
         String tmpFile = fileName + ".tmp";
         string2FileNotSafe(str, tmpFile);
-        //
+        //在把原来的内容在做一个备份文件
         String bakFile = fileName + ".bak";
         String prevContent = file2String(fileName);
         if (prevContent != null) {
@@ -150,7 +150,7 @@ public class MixAll {
 
         File file = new File(fileName);
         file.delete();
-
+        //在把备份的文件名字修改为kvConfig.json
         file = new File(tmpFile);
         file.renameTo(new File(fileName));
     }
@@ -159,7 +159,7 @@ public class MixAll {
      * 将内容写到文件
      * 非安全写
      *
-     * @param str 内容
+     * @param str      内容
      * @param fileName 文件内容
      * @throws IOException 当IO发生异常时
      */
@@ -337,15 +337,18 @@ public class MixAll {
     public static void properties2Object(final Properties p, final Object object) {
         Method[] methods = object.getClass().getMethods();
         for (Method method : methods) {
+            //获取方法的名字
             String mn = method.getName();
             if (mn.startsWith("set")) {
                 try {
+                    //转换为变量的名字
                     String tmp = mn.substring(4);
                     String first = mn.substring(3, 4);
 
                     String key = first.toLowerCase() + tmp;
                     String property = p.getProperty(key);
                     if (property != null) {
+                        //其实这里做的不严谨
                         Class<?>[] pt = method.getParameterTypes();
                         if (pt != null && pt.length > 0) {
                             String cn = pt[0].getSimpleName();
@@ -365,6 +368,7 @@ public class MixAll {
                             } else {
                                 continue;
                             }
+                            //通过反射的方式来映射参数值
                             method.invoke(object, arg);
                         }
                     }
@@ -410,8 +414,8 @@ public class MixAll {
             return addr.getHostAddress();
         } catch (Throwable e) {
             throw new RuntimeException("InetAddress java.net.InetAddress.getLocalHost() throws UnknownHostException"
-                + FAQUrl.suggestTodo(FAQUrl.UNKNOWN_HOST_EXCEPTION),
-                e);
+                    + FAQUrl.suggestTodo(FAQUrl.UNKNOWN_HOST_EXCEPTION),
+                    e);
         }
     }
 
@@ -433,8 +437,8 @@ public class MixAll {
             return InetAddress.getLocalHost().getHostName();
         } catch (Throwable e) {
             throw new RuntimeException("InetAddress java.net.InetAddress.getLocalHost() throws UnknownHostException"
-                + FAQUrl.suggestTodo(FAQUrl.UNKNOWN_HOST_EXCEPTION),
-                e);
+                    + FAQUrl.suggestTodo(FAQUrl.UNKNOWN_HOST_EXCEPTION),
+                    e);
         }
     }
 

@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 维护clientId 与 MQClient对象的关系
  */
 public class MQClientManager {
+
     private final static Logger log = ClientLogger.getLog();
 
     private static MQClientManager instance = new MQClientManager();
@@ -63,9 +64,9 @@ public class MQClientManager {
         String clientId = clientConfig.buildMQClientId();
         MQClientInstance instance = this.factoryTable.get(clientId);
         if (null == instance) {
-            instance =
-                    new MQClientInstance(clientConfig.cloneClientConfig(),
+            instance = new MQClientInstance(clientConfig.cloneClientConfig(),
                             this.factoryIndexGenerator.getAndIncrement(), clientId, rpcHook);
+            //如果不存在才会push进入一个，如果已经存在了就不会在push
             MQClientInstance prev = this.factoryTable.putIfAbsent(clientId, instance);
             //判断之前是否已经存在相同的客户端
             if (prev != null) {

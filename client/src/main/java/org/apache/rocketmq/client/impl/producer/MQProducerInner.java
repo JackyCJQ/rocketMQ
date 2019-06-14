@@ -34,7 +34,7 @@ public interface MQProducerInner {
     Set<String> getPublishTopicList();
 
     /**
-     * 该Topic 是否需要更新路由信息
+     * 该Topic是否需要更新路由信息
      *
      * @param topic Topic
      * @return 是否需要

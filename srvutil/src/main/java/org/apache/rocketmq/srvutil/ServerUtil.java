@@ -34,8 +34,7 @@ public class ServerUtil {
         //增加一个帮助命令
         options.addOption(opt);
         //构造启动时需要加上 -n 说明命名服务器的地址
-        opt =
-                new Option("n", "namesrvAddr", true,
+        opt =new Option("n", "namesrvAddr", true,
                         "Name server address list, eg: 192.168.0.1:9876;192.168.0.2:9876");
         opt.setRequired(false);
         options.addOption(opt);

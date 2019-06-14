@@ -27,7 +27,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 服务线程
  */
 public abstract class ServiceThread implements Runnable {
+
     private static final Logger STLOG = LoggerFactory.getLogger(LoggerName.COMMON_LOGGER_NAME);
+    //一分半的时间
     private static final long JOIN_TIME = 90 * 1000;
 
     /**
@@ -35,13 +37,13 @@ public abstract class ServiceThread implements Runnable {
      */
     protected final Thread thread;
     /**
-     * 等待标识
+     * 等待标识 重写了countDownLatch吗？
      */
     protected final CountDownLatch2 waitPoint = new CountDownLatch2(1);
-    // TODO 疑问：这个变量的用途没看懂？
+    //
     protected volatile AtomicBoolean hasNotified = new AtomicBoolean(false);
     /**
-     * 是否停止
+     * 是否停止，线程间可见
      */
     protected volatile boolean stopped = false;
 
@@ -78,7 +80,7 @@ public abstract class ServiceThread implements Runnable {
             }
             long eclipseTime = System.currentTimeMillis() - beginTime;
             STLOG.info("join thread " + this.getServiceName() + " eclipse time(ms) " + eclipseTime + " "
-                + this.getJointime());
+                    + this.getJointime());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

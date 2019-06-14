@@ -110,6 +110,7 @@ public class MessageQueue implements Comparable<MessageQueue>, Serializable {
         return "MessageQueue [topic=" + topic + ", brokerName=" + brokerName + ", queueId=" + queueId + "]";
     }
 
+    //比较的话先是比较topic是否相等然后是brokerName是否相等，最后是queueId
     @Override
     public int compareTo(MessageQueue o) {
         {

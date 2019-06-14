@@ -26,7 +26,6 @@ public enum ConsumeFromWhere {
      * 后续再启动接着上次消费的进度开始消费
      */
     CONSUME_FROM_LAST_OFFSET,
-
     @Deprecated
     CONSUME_FROM_LAST_OFFSET_AND_FROM_MIN_WHEN_BOOT_FIRST,
     @Deprecated

@@ -61,9 +61,8 @@ public class DefaultMQProducerImpl implements MQProducerInner {
     private final Random random = new Random();
 
     private final DefaultMQProducer defaultMQProducer;
-
-    private final ConcurrentHashMap<String/* topic */, TopicPublishInfo> topicPublishInfoTable =
-            new ConcurrentHashMap<String, TopicPublishInfo>();
+     //topic 和其对应的路由信息
+    private final ConcurrentHashMap<String/* topic */, TopicPublishInfo> topicPublishInfoTable = new ConcurrentHashMap<String, TopicPublishInfo>();
 
     private final ArrayList<SendMessageHook> sendMessageHookList = new ArrayList<SendMessageHook>();
 
@@ -73,6 +72,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
     protected ExecutorService checkExecutor;
 
+    //默认为刚创建状态
     private ServiceState serviceState = ServiceState.CREATE_JUST;
     /**
      * MQClient对象，用户和namesrv交互
@@ -144,15 +144,16 @@ public class DefaultMQProducerImpl implements MQProducerInner {
     public void start(final boolean startFactory) throws MQClientException {
         switch (this.serviceState) {
             case CREATE_JUST:
+                //先默认设置为启动失败
                 this.serviceState = ServiceState.START_FAILED;
-                //1。校验所属的组名字是否合理
+                //1。校验所属的组名字设置是否合理
                 this.checkConfig();
-                //2。改变实例的名字为进程号（如果用户没有设置instanceName）
+                //2。改变实例的instanceName为进程号（如果用户没有设置instanceName）
                 if (!this.defaultMQProducer.getProducerGroup().equals(MixAll.CLIENT_INNER_PRODUCER_GROUP)) {
                     this.defaultMQProducer.changeInstanceNameToPID();
                 }
 
-                // 3。获取MQClientInstance对象
+                // 3。获取MQClientInstance对象（同一个jvm中相同instance会对应同一个MQClientInstance）
                 this.mQClientFactory = MQClientManager.getInstance().getAndCreateMQClientInstance(this.defaultMQProducer, rpcHook);
 
                 // 4。注册Producer,往这个客户端里注册一个生产者实例
@@ -160,6 +161,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                 //如果注册失败，抛出异常
                 if (!registerOK) {
                     this.serviceState = ServiceState.CREATE_JUST;
+                    //同一个机器上只能有一个相同名字的消费者吗？
                     throw new MQClientException("The producer group[" + this.defaultMQProducer.getProducerGroup()
                             + "] has been created before, specify another name please." + FAQUrl.suggestTodo(FAQUrl.GROUP_NAME_DUPLICATE_URL),
                             null);
@@ -518,7 +520,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      * 4. 对发送结果进行封装返回
      *
      * @param msg               消息
-     * @param communicationMode 通信模式
+     * @param communicationMode 通信模式  默认是同步发送
      * @param sendCallback      发送回调
      * @param timeout           发送消息请求超时时间
      * @return 发送结果
@@ -533,25 +535,26 @@ public class DefaultMQProducerImpl implements MQProducerInner {
         this.makeSureStateOK();
         //2。校验消息的大小，topic符合约定
         Validators.checkMessage(msg, this.defaultMQProducer);
-        //
         final long invokeID = random.nextLong(); // 调用编号；用于下面打印日志，标记为同一次发送消息
         long beginTimestampFirst = System.currentTimeMillis();
         long beginTimestampPrev = beginTimestampFirst;
         long endTimestamp = beginTimestampFirst;
 
-        // 获取 Topic路由信息
+        //3。获取Topic路由信息
         TopicPublishInfo topicPublishInfo = this.tryToFindTopicPublishInfo(msg.getTopic());
         if (topicPublishInfo != null && topicPublishInfo.ok()) {
             MessageQueue mq = null;
             Exception exception = null;
-            SendResult sendResult = null; // 最后一次发送结果
-            int timesTotal = communicationMode == CommunicationMode.SYNC ? 1 + this.defaultMQProducer.getRetryTimesWhenSendFailed() : 1; // 同步多次调用
+            SendResult sendResult = null;
+            //如果是同步发送，则发送重试次数为3次，其他为1次
+            int timesTotal = communicationMode == CommunicationMode.SYNC ? 1 + this.defaultMQProducer.getRetryTimesWhenSendFailed() : 1;
             int times = 0; // 第几次发送
             String[] brokersSent = new String[timesTotal]; // 存储每次发送消息选择的broker名
             // 循环调用发送消息，直到成功
             for (; times < timesTotal; times++) {
+                //上一次发送的borker的名字
                 String lastBrokerName = null == mq ? null : mq.getBrokerName();
-                @SuppressWarnings("SpellCheckingInspection")
+                //从topic路由信息中选择一个进行发送
                 MessageQueue tmpmq = this.selectOneMessageQueue(topicPublishInfo, lastBrokerName); // 选择消息要发送到的队列
                 //获取到要发送消息的队列
                 if (tmpmq != null) {
@@ -664,19 +667,21 @@ public class DefaultMQProducerImpl implements MQProducerInner {
      * @return topic 信息
      */
     private TopicPublishInfo tryToFindTopicPublishInfo(final String topic) {
-        // 缓存中获取 Topic发布信息
+        //1。先从本地缓存中获取Topic信息
         TopicPublishInfo topicPublishInfo = this.topicPublishInfoTable.get(topic);
-        // 当无可用的 Topic发布信息时，从Namesrv获取一次
         if (null == topicPublishInfo || !topicPublishInfo.ok()) {
-            //如果不存在则放入一个新的topic信息在其中
+            //2。如果不存在则放入一个新的topic和其路由信息
             this.topicPublishInfoTable.putIfAbsent(topic, new TopicPublishInfo());
+            //3。更新这个topic的路由信息
             this.mQClientFactory.updateTopicRouteInfoFromNameServer(topic);
+            //4。获取更新之后的topic路由信息
             topicPublishInfo = this.topicPublishInfoTable.get(topic);
         }
-        // 若获取的 Topic发布信息时候可用，则返回
+        // 5。若本地缓存中存在该topic对应的路由信息
         if (topicPublishInfo.isHaveTopicRouterInfo() || topicPublishInfo.ok()) {
             return topicPublishInfo;
-        } else { // 使用 {@link DefaultMQProducer#createTopicKey} 对应的 Topic发布信息。用于 Topic发布信息不存在 && Broker支持自动创建Topic
+        } else {
+            // 6。使用 {@link DefaultMQProducer#createTopicKey} 对应的Topic发布信息。用于topic发布信息不存在 && Broker支持自动创建Topic
             this.mQClientFactory.updateTopicRouteInfoFromNameServer(topic, true, this.defaultMQProducer);
             topicPublishInfo = this.topicPublishInfoTable.get(topic);
             return topicPublishInfo;
@@ -703,14 +708,15 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                                       final CommunicationMode communicationMode, //发送方式，同步，异步
                                       final SendCallback sendCallback, // 回掉函数
                                       final TopicPublishInfo topicPublishInfo, // topic路由函数
-                                      final long timeout) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
-        // 获取 broker地址
+                                      final long timeout //超时时间
+    ) throws MQClientException, RemotingException, MQBrokerException, InterruptedException {
+        // 获取master的地址
         String brokerAddr = this.mQClientFactory.findBrokerAddressInPublish(mq.getBrokerName());
         if (null == brokerAddr) {
+            //如果不存在在尝试获取一次
             tryToFindTopicPublishInfo(mq.getTopic());
             brokerAddr = this.mQClientFactory.findBrokerAddressInPublish(mq.getBrokerName());
         }
-        //
         SendMessageContext context = null;
         if (brokerAddr != null) {
             // 是否使用broker vip通道。broker会开启两个端口对外服务。

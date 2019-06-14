@@ -76,10 +76,19 @@ public class MQAdminImpl {
         createTopic(key, newTopic, queueNum, 0);
     }
 
+    /**
+     * 创建一个topic
+     * @param key 暂时没有什么作用
+     * @param newTopic 新的主题名字
+     * @param queueNum 队列的数量
+     * @param topicSysFlag 系统标记
+     * @throws MQClientException
+     */
     public void createTopic(String key, String newTopic, int queueNum, int topicSysFlag) throws MQClientException {
         try {
             TopicRouteData topicRouteData = this.mQClientFactory.getMQClientAPIImpl().getTopicRouteInfoFromNameServer(key, timeoutMillis);
             List<BrokerData> brokerDataList = topicRouteData.getBrokerDatas();
+            //根据key去获取对应的broker信息
             if (brokerDataList != null && !brokerDataList.isEmpty()) {
                 Collections.sort(brokerDataList);
 
@@ -89,14 +98,17 @@ public class MQAdminImpl {
                 StringBuilder orderTopicString = new StringBuilder();
 
                 for (BrokerData brokerData : brokerDataList) {
+                    //获取每个broker的主节点
                     String addr = brokerData.getBrokerAddrs().get(MixAll.MASTER_ID);
                     if (addr != null) {
+                        //
                         TopicConfig topicConfig = new TopicConfig(newTopic);
                         topicConfig.setReadQueueNums(queueNum);
                         topicConfig.setWriteQueueNums(queueNum);
                         topicConfig.setTopicSysFlag(topicSysFlag);
 
                         boolean createOK = false;
+                        //默认最大尝试的次数为5次
                         for (int i = 0; i < 5; i++) {
                             try {
                                 this.mQClientFactory.getMQClientAPIImpl().createTopic(addr, key, topicConfig, timeoutMillis);

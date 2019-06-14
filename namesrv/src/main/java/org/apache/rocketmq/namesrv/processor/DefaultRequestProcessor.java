@@ -157,8 +157,10 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
     }
 
     public RemotingCommand getKVConfig(ChannelHandlerContext ctx, RemotingCommand request) throws RemotingCommandException {
+         //通过反射创建然后获取到这个头信息
         final RemotingCommand response = RemotingCommand.createResponseCommand(GetKVConfigResponseHeader.class);
         final GetKVConfigResponseHeader responseHeader = (GetKVConfigResponseHeader) response.readCustomHeader();
+
         final GetKVConfigRequestHeader requestHeader =
             (GetKVConfigRequestHeader) request.decodeCommandCustomHeader(GetKVConfigRequestHeader.class);
 
@@ -234,7 +236,7 @@ public class DefaultRequestProcessor implements NettyRequestProcessor {
         //设置主节点的地址
         responseHeader.setMasterAddr(result.getMasterAddr());
 
-        //获取该命名空间的所有的配置
+        //获取ORDER_TOPIC_CONFIG该命名空间的所有的配置
         byte[] jsonValue = this.namesrvController.getKvConfigManager().getKVListByNamespace(NamesrvUtil.NAMESPACE_ORDER_TOPIC_CONFIG);
         //返回对应的配置
         response.setBody(jsonValue);

@@ -565,6 +565,7 @@ public class RouteInfoManager {
 
     /**
      * 在broker失去连接的时候，去掉相关信息
+     *
      * @param remoteAddr
      * @param channel
      */
@@ -626,7 +627,7 @@ public class RouteInfoManager {
                                 break;
                             }
                         }
-                     //移除掉整个broker信息
+                        //移除掉整个broker信息
                         if (brokerData.getBrokerAddrs().isEmpty()) {
                             removeBrokerName = true;
                             itBrokerAddrTable.remove();
@@ -656,7 +657,7 @@ public class RouteInfoManager {
                             }
                         }
                     }
-                     //在移除掉队列中的信息
+                    //在移除掉队列中的信息
                     if (removeBrokerName) {
                         Iterator<Entry<String, List<QueueData>>> itTopicQueueTable =
                                 this.topicQueueTable.entrySet().iterator();
