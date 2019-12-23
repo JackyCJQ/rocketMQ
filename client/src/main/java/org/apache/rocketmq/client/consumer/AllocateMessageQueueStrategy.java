@@ -21,7 +21,6 @@ import org.apache.rocketmq.common.message.MessageQueue;
 import java.util.List;
 
 /**
- * Strategy Algorithm for message allocating between consumers
  * 消息分配策略 通俗理解应该就是负载均衡
  */
 public interface AllocateMessageQueueStrategy {
@@ -30,22 +29,20 @@ public interface AllocateMessageQueueStrategy {
      * Allocating by consumer id
      *
      * @param consumerGroup current consumer group
-     * @param currentCID current consumer id
-     * @param mqAll message queue set in current topic
-     * @param cidAll consumer set in current consumer group
+     * @param currentCID    current consumer id
+     * @param mqAll         message queue set in current topic
+     * @param cidAll        consumer set in current consumer group
      * @return The allocate result of given strategy
      */
     List<MessageQueue> allocate(
-        final String consumerGroup,
-        final String currentCID,
-        final List<MessageQueue> mqAll,
-        final List<String> cidAll
+            final String consumerGroup,
+            final String currentCID,
+            final List<MessageQueue> mqAll,
+            final List<String> cidAll
     );
 
     /**
-     * Algorithm name
      * 负载均衡算法的名字
-     * @return The strategy name
      */
     String getName();
 }

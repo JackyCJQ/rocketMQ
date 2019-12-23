@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Default pulling consumer
  * 默认拉取模式的消费者
  */
 public class DefaultMQPullConsumer extends ClientConfig implements MQPullConsumer {
